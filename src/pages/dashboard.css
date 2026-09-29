@@ -1,0 +1,16 @@
+/* entire application */
+
+.dashboard{
+    display: flex;
+    min-height:100vh;
+}
+
+/* Main content */
+.mainDiv {
+    flex: 1;
+}
+
+/* Main page content */
+.content {
+    padding: 30px;
+}

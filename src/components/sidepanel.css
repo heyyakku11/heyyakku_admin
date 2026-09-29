@@ -1,0 +1,123 @@
+.sidepanel {
+    width: 240px;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 24px 16px;
+    box-sizing: border-box;
+
+    background-color: #ffffff;
+    border-right: 1px solid #e5e7eb;
+}
+
+
+/* Logo */
+
+.logo {
+    margin: 0 0 40px 12px;
+
+    font-size: 24px;
+    font-weight: 700;
+    color: #2563eb;
+}
+
+
+/* Navigation */
+
+.sidepanel-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    width: 100%;
+
+    padding: 12px 14px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: transparent;
+
+    text-decoration: none;
+    text-align: left;
+
+    color: #4b5563;
+
+    font-size: 15px;
+    font-weight: 500;
+
+    cursor: pointer;
+}
+
+
+/* Make all icons the same width */
+
+.nav-item svg {
+    width: 18px;
+}
+
+
+/* Hover */
+
+.nav-item:hover {
+    background-color: #f3f4f6;
+    color: #111827;
+}
+
+
+/* Active page */
+
+.nav-item.active {
+    background-color: #eff6ff;
+    color: #2563eb;
+}
+
+
+/* Logout */
+
+.logout-button {
+    margin-top: auto;
+
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    width: 100%;
+
+    padding: 12px 14px;
+
+    border: none;
+    border-radius: 8px;
+
+    background: transparent;
+
+    color: #4b5563;
+
+    font-size: 15px;
+    font-weight: 500;
+
+    text-align: left;
+
+    cursor: pointer;
+}
+
+
+.logout-button:hover {
+    background-color: #fef2f2;
+    color: #dc2626;
+}
+
+
+.logout-button svg {
+    width: 18px;
+}
