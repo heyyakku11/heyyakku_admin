@@ -9,13 +9,17 @@ import Polls from './sections/polls'
 import Settings from './sections/settings'
 import { useState } from 'react'
 
-function Dashboard(){
+interface DashboardProps{
+    setLogin: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+function Dashboard({setLogin}:DashboardProps){
     const [activeSection, setActiveSection] = useState("home");
     
     return (
         <main className="dashboard">
             {/*sidebar */}
-            <SidePanel activeSection={activeSection} setActiveSection={setActiveSection}/>
+            <SidePanel setLogin={setLogin} activeSection={activeSection} setActiveSection={setActiveSection}/>
 
             {/*main area */}
             <div className="mainDiv">

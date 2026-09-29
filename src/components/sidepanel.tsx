@@ -9,9 +9,10 @@ import {
     faDisplay
 } from "@fortawesome/free-solid-svg-icons";
 
-interface SidePanelProps{
-    activeSection: string
-    setActiveSection: (section :string) => void
+interface SidePanelProps {
+    setLogin: React.Dispatch<React.SetStateAction<boolean>>;
+    activeSection: string;
+    setActiveSection: (section: string) => void;
 }
 
 const menuItems = [
@@ -37,12 +38,10 @@ const menuItems = [
     }
 ];
 
-function SidePanel({activeSection, setActiveSection}:SidePanelProps) {
+function SidePanel({setLogin, activeSection, setActiveSection}:SidePanelProps) {
     function _logout(){
        if(confirm("Are you sure you want to logout?")){
-          alert("logged out");
-
-          //here you can later call api request to logout
+          setLogin(false);
        }
     }
 
