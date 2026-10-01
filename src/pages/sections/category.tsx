@@ -3,14 +3,6 @@ import { useEffect, useState } from 'react';
 import { getCategories } from '../../services/categoryService';
 import type { Category } from '../../types/category';
 
-function formatDate(date: string) {
-    return new Date(date).toLocaleDateString("en-IN", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric"
-    });
-}
-
 function formatDateTime(date: string) {
     return new Date(date).toLocaleString("en-IN", {
         day: "2-digit",
@@ -21,7 +13,7 @@ function formatDateTime(date: string) {
     });
 }
 
-function Category() {
+function Categories() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -175,4 +167,4 @@ function Category() {
     );
 }
 
-export default Category;
+export default Categories;

@@ -53,6 +53,15 @@ function Header() {
     function handleNotificationClick() {
         setIsNotificationOpen(prev => !prev);
     }
+
+    function handleMarkAllAsRead() {
+        setNotifications(current =>
+            current.map(notification => ({
+                ...notification,
+                isRead: true
+            }))
+        );
+    }
     
     const avatarCharacter = email
     ? email.charAt(0).toUpperCase()
@@ -85,7 +94,7 @@ function Header() {
             {isNotificationOpen && (
                 <NotificationPanel
                     notifications={notifications}
-                    setNotifications={setNotifications}
+                    onMarkAllAsRead={handleMarkAllAsRead}
                 />
             )}
         </div>

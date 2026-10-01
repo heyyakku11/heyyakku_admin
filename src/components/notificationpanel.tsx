@@ -6,6 +6,7 @@ import { formatRelativeTime } from '../utils/data';
 
 interface NotificationPanelProps {
     notifications: Notification[];
+    onMarkAllAsRead: () => void;
 }
 
 
@@ -32,7 +33,8 @@ function getNotificationIcon(type: Notification['type']) {
 
 
 function NotificationPanel({
-    notifications
+    notifications,
+    onMarkAllAsRead
 }: NotificationPanelProps) {
 
     const unreadCount = notifications.filter(
@@ -53,7 +55,10 @@ function NotificationPanel({
                     </span>
                 </div>
 
-                <button className="mark-read-button">
+                <button
+                    className="mark-read-button"
+                    onClick={onMarkAllAsRead}
+                >
                     Mark all as read
                 </button>
 

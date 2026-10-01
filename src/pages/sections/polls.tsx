@@ -146,7 +146,7 @@ function Polls() {
                             <div className="poll-stat">
                                 <span className="stat-value">
                                     {poll.expiresAt
-                                        ? formatDate(poll.expiresAt)
+                                        ? formatDateTime(poll.expiresAt)
                                         : "No expiry"
                                     }
                                 </span>

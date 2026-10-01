@@ -78,11 +78,13 @@ async function refreshAccessToken(): Promise<string | null> {
 
     try {
 
+        const refreshRequest: RefreshRequest = {
+            refreshToken
+        };
+
         const response = await refreshClient.post(
             "/api/v1/admin/auth/refresh",
-            {
-                refreshToken
-            }
+            refreshRequest
         );
 
         const data = response.data;
