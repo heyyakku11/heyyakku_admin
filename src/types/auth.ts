@@ -8,6 +8,8 @@ export interface LoginResponse{
     refreshToken:string
     accessTokenExpiry:number
     refreshTokenExpiry:number
+    email: string
+    role: string
 }
 
 export interface RefreshRequest{

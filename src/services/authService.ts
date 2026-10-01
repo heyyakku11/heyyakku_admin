@@ -12,14 +12,6 @@ export async function adminLogin(
    return response.data;
 }
 
-export async function adminRefresh(
-    data: RefreshRequest
-):Promise<ApiResponse<LoginResponse>>{
-   const response = await axios.post<ApiResponse<LoginResponse>>(`${API_BASE_URL}/api/v1/admin/auth/refresh`,data);
-
-   return response.data;
-}
-
 export async function adminLogout(
     data: RefreshRequest
 ):Promise<ApiResponse<null>>{

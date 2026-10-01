@@ -1,16 +1,13 @@
-import './header.css'
+import './header.css';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell} from "@fortawesome/free-solid-svg-icons";
+import { faBell } from "@fortawesome/free-solid-svg-icons";
 import { useState } from 'react';
 import NotificationPanel from './notificationpanel';
-import ProfilePanel from './profilepanel';
 import type { Notification } from '../types/notification';
 
-
-function Header(){
-    
+function Header() {
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-    const [isProfileOpen, setIsProfileOpen] = useState(false);
+
     const [notifications, setNotifications] = useState<Notification[]>([
         {
             id: '1',
@@ -46,83 +43,67 @@ function Header(){
         }
     ]);
 
- const unreadCount = notifications.filter(
+    const email = localStorage.getItem("email") ?? "";
+    const role = localStorage.getItem("role") ?? "";
+
+    const unreadCount = notifications.filter(
         notification => !notification.isRead
     ).length;
-
 
     function handleNotificationClick() {
         setIsNotificationOpen(prev => !prev);
     }
+    
+    const avatarCharacter = email
+    ? email.charAt(0).toUpperCase()
+    : "A";
 
-     function handleLogout() {
-        console.log("Logout clicked");
-    }
-
-    return(
+    return (
         <header className="header">
+    <div className="avatar-buttons">
 
-            <div className="avatar-buttons">
+        {/* Notification */}
+        <div className="notification-wrapper">
+            <button
+                className={`avatar-button ${
+                    isNotificationOpen
+                        ? 'notification-active'
+                        : ''
+                }`}
+                onClick={handleNotificationClick}
+                aria-label="Notifications"
+            >
+                <FontAwesomeIcon icon={faBell} />
 
-                <div className="notification-wrapper">
+                {unreadCount > 0 && (
+                    <span className="notification-badge">
+                        {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                )}
+            </button>
 
-                    <button
-                        className={`avatar-button ${
-                            isNotificationOpen
-                                ? 'notification-active'
-                                : ''
-                        }`}
-                        onClick={handleNotificationClick}
-                        aria-label="Notifications"
-                    >
+            {isNotificationOpen && (
+                <NotificationPanel
+                    notifications={notifications}
+                    setNotifications={setNotifications}
+                />
+            )}
+        </div>
 
-                        <FontAwesomeIcon icon={faBell} />
-
-                        {unreadCount > 0 && (
-                            <span className="notification-badge">
-                                {unreadCount > 99
-                                    ? '99+'
-                                    : unreadCount}
-                            </span>
-                        )}
-
-                    </button>
-
-
-                    {isNotificationOpen && (
-                        <NotificationPanel
-                            notifications={notifications}
-                        />
-                    )}
-
-                </div>
-
-
-                <div className="profile-wrapper">
-
-    <button
-        className={`avatar-button profile-button ${
-            isProfileOpen ? 'profile-active' : ''
-        }`}
-        onClick={() => setIsProfileOpen(prev => !prev)}
-    >
-        <img
-            src="https://cdn.pixabay.com/photo/2018/04/13/21/24/lion-3317670_640.jpg"
-            alt="Profile"
-        />
-    </button>
-
-    {isProfileOpen && (
-        <ProfilePanel
-            onLogout={handleLogout}
-        />
-    )}
-
+        {/* Profile information */}
+        <div className="profile-info">
+            <div className="profile-avatar">
+    {avatarCharacter}
 </div>
 
+            <div className="profile-details">
+                <p className="profile-email">{email}</p>
+                <span className="profile-role">{role}</span>
             </div>
+        </div>
 
-        </header>
+    </div>
+</header>
     );
 }
 
