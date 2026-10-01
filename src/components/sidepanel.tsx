@@ -8,6 +8,9 @@ import {
     faRightFromBracket,
     faDisplay
 } from "@fortawesome/free-solid-svg-icons";
+import { useState } from 'react';
+import { adminLogout } from '../services/authService';
+import type { RefreshRequest } from '../types/auth';
 
 interface SidePanelProps {
     setLogin: React.Dispatch<React.SetStateAction<boolean>>;
@@ -32,6 +35,11 @@ const menuItems = [
         icon: faPoll
     },
     {
+        id: "categories",
+        label: "Categories",
+        icon: faDisplay
+    },
+    {
         id: "settings",
         label: "Settings",
         icon: faGear
@@ -39,11 +47,44 @@ const menuItems = [
 ];
 
 function SidePanel({setLogin, activeSection, setActiveSection}:SidePanelProps) {
-    function _logout(){
-       if(confirm("Are you sure you want to logout?")){
-          setLogin(false);
-       }
+   const[isLoading,setLoading] = useState(false);
+    
+   async function _logout() {
+    if (!confirm("Are you sure you want to logout?")) {
+        return;
     }
+
+    try {
+        setLoading(true);
+
+        const refreshToken = localStorage.getItem("refreshToken");
+
+        if (refreshToken) {
+            const request: RefreshRequest = {
+                refreshToken
+            };
+
+            try {
+                const response = await adminLogout(request);
+
+                if (!response.success) {
+                    console.warn("Server logout failed:", response.message);
+                }
+
+            } catch (ex) {
+                console.warn("Server logout request failed:", ex);
+            }
+        }
+
+    } finally {
+        // Always clear client authentication state
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+
+        setLogin(false);
+        setLoading(false);
+    }
+}
 
     return (
         <aside className="sidepanel">
@@ -66,7 +107,8 @@ function SidePanel({setLogin, activeSection, setActiveSection}:SidePanelProps) {
 
             <button className="logout-button" onClick={_logout}>
                 <FontAwesomeIcon icon={faRightFromBracket} />
-                <span>Log out</span>
+                {isLoading?"Logging  out ...":
+                "Log out"}
             </button>
 
         </aside>

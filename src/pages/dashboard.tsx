@@ -6,6 +6,7 @@ import Header from '../components/header'
 import Home from './sections/home'
 import Users from './sections/users'
 import Polls from './sections/polls'
+import Categories from './sections/category'
 import Settings from './sections/settings'
 import { useState } from 'react'
 
@@ -31,6 +32,7 @@ function Dashboard({setLogin}:DashboardProps){
                    {activeSection =="home" && <Home/>}
                    {activeSection =="users" && <Users/>}
                    {activeSection =="polls" && <Polls/>}
+                   {activeSection =="categories" && <Categories/>}
                    {activeSection =="settings" && <Settings/>}
                </section>
 

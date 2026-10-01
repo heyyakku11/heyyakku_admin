@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import './login.css'
 
+import { adminLogin } from '../services/authService';
+import type { LoginRequest } from '../types/auth';
+
 interface LoginProps {
     setLogin: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -10,24 +13,57 @@ function Login({setLogin}:LoginProps){
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
     
-    function _loginAdmin(){
-        
-        //check if email is empty
-        if(!email){
-            alert('enter email')
-            return
+    async function _loginAdmin() {
+
+    if (!email) {
+        alert("Enter email");
+        return;
+    }
+
+    if (!password) {
+        alert("Enter password");
+        return;
+    }
+
+    const request: LoginRequest = {
+        email,
+        password
+    };
+
+   try {
+    setLoading(true);
+
+    const response = await adminLogin(request);
+
+    if (response.success) {
+
+        if (!response.data) {
+            throw new Error("Login succeeded but no login data was returned.");
         }
 
-        //check if password is empty
-        if(!password){
-            alert('enter password')
-            return
-        }
-
+        localStorage.setItem("accessToken", response.data.accessToken);
+        localStorage.setItem("refreshToken", response.data.refreshToken);
 
         setLogin(true);
+
+    } else {
+        alert(response.message);
     }
+
+} catch (ex) {
+    if (ex instanceof Error) {
+        alert(ex.message);
+    } else {
+        alert("Something went wrong");
+    }
+} finally {
+    setEmail("");
+    setPassword("");
+    setLoading(false);
+}
+}
 
     return(
        <div className="login-container">
@@ -60,8 +96,8 @@ function Login({setLogin}:LoginProps){
             />
         </div>
 
-        <button className="login-button" onClick={_loginAdmin}>
-            Login
+        <button className="login-button" onClick={_loginAdmin} disabled={loading}>
+            {loading? "Logging in" : "Login"}
         </button>
 
     </div>

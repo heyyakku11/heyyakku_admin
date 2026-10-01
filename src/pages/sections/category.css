@@ -1,0 +1,241 @@
+.category-section {
+    padding: 24px;
+}
+
+/* =========================
+   Header
+========================= */
+
+.category-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 24px;
+}
+
+.category-header h2 {
+    margin: 0;
+
+    font-size: 24px;
+    font-weight: 600;
+
+    color: #111827;
+}
+
+.category-header p {
+    margin: 5px 0 0;
+
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.category-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.category-count {
+    padding: 6px 12px;
+
+    border-radius: 20px;
+
+    background: #f3f4f6;
+
+    color: #4b5563;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* =========================
+   Create Button
+========================= */
+
+.create-category-button {
+    border: none;
+    border-radius: 8px;
+
+    padding: 10px 16px;
+
+    background: #111827;
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+.create-category-button:hover {
+    background: #374151;
+}
+
+.create-category-button:active {
+    transform: translateY(1px);
+}
+
+/* =========================
+   Category Grid
+========================= */
+
+.category-container {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fill, minmax(300px, 1fr));
+
+    gap: 18px;
+}
+
+/* =========================
+   Card
+========================= */
+
+.category-card {
+    padding: 18px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+
+    transition:
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.category-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================
+   Card Header
+========================= */
+
+.category-card-header {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+}
+
+.category-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 10px;
+
+    background: #f1f5f9;
+    color: #334155;
+
+    font-size: 17px;
+    font-weight: 600;
+
+    text-transform: uppercase;
+}
+
+.category-info {
+    min-width: 0;
+    flex: 1;
+}
+
+.category-info h3 {
+    margin: 0 0 4px;
+
+    color: #111827;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    text-transform: capitalize;
+}
+
+.category-info span {
+    color: #9ca3af;
+
+    font-size: 12px;
+    font-weight: 500;
+}
+
+/* =========================
+   Status
+========================= */
+
+.category-status {
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    flex-shrink: 0;
+}
+
+.category-status.active {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.category-status.inactive {
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+/* =========================
+   Divider
+========================= */
+
+.category-divider {
+    height: 1px;
+
+    margin: 16px 0;
+
+    background: #e5e7eb;
+}
+
+/* =========================
+   Footer
+========================= */
+
+.category-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.category-created {
+    color: #9ca3af;
+
+    font-size: 12px;
+}
+
+.category-menu {
+    border: none;
+    background: transparent;
+
+    padding: 2px 6px;
+
+    color: #6b7280;
+
+    font-size: 20px;
+
+    cursor: pointer;
+}
+
+.category-menu:hover {
+    color: #111827;
+}

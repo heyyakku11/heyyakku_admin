@@ -1,22 +1,46 @@
+/* =========================
+   Header
+========================= */
 
-
-/* Header */
 .header {
     height: 50px;
+
     display: flex;
     align-items: center;
+
     padding: 0 20px;
+
     border-bottom: 1px solid #ddd;
+
+    background-color: #ffffff;
+
+    position: relative;
+
+    z-index: 100;
 }
+
+
+/* =========================
+   Header Buttons
+========================= */
 
 .avatar-buttons {
     display: flex;
     align-items: center;
+
     margin-left: auto;
+
     gap: 10px;
 }
 
+
+/* =========================
+   Avatar Button
+========================= */
+
 .avatar-button {
+    position: relative;
+
     width: 36px;
     height: 36px;
 
@@ -31,23 +55,229 @@
     color: #333;
 
     cursor: pointer;
+
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease;
 }
 
 .avatar-button:hover {
     background-color: #e5e5e5;
 }
 
-.avatar-button i {
-    font-size: 18px;
+
+/* FontAwesome icon */
+
+.avatar-button svg {
+    font-size: 17px;
 }
+
+
+/* =========================
+   Notification Wrapper
+========================= */
+
+.notification-wrapper {
+    position: relative;
+}
+
+
+/* Active notification button */
+
+.notification-active {
+    background-color: #e5e5e5;
+    color: #111827;
+}
+
+
+/* =========================
+   Notification Badge
+========================= */
+
+.notification-badge {
+    position: absolute;
+
+    top: -2px;
+    right: -2px;
+
+    min-width: 16px;
+    height: 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0 4px;
+
+    border-radius: 10px;
+
+    background-color: #ef4444;
+    color: #ffffff;
+
+    font-size: 9px;
+    font-weight: 700;
+
+    line-height: 1;
+
+    border: 2px solid #ffffff;
+
+    pointer-events: none;
+}
+
+
+/* =========================
+   Profile Wrapper
+========================= */
+
+.profile-wrapper {
+    position: relative;
+}
+
+
+/* =========================
+   Profile Button
+========================= */
 
 .profile-button {
     padding: 0;
+
     overflow: hidden;
 }
 
 .profile-button img {
     width: 100%;
     height: 100%;
+
     object-fit: cover;
+}
+
+
+/* Active profile button */
+
+.profile-active {
+    outline: 2px solid #e5e7eb;
+    outline-offset: 2px;
+}
+
+
+/* =========================
+   Notification Panel
+========================= */
+
+.notification-wrapper .notification-panel {
+    position: absolute;
+
+    top: calc(100% + 10px);
+    right: 0;
+
+    width: 390px;
+    max-height: 520px;
+
+    display: flex;
+    flex-direction: column;
+
+    background-color: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+
+    overflow: hidden;
+
+    z-index: 1000;
+
+    animation: notificationSlideIn 0.2s ease-out;
+}
+
+
+/* =========================
+   Notification Animation
+========================= */
+
+@keyframes notificationSlideIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================
+   Profile Panel
+========================= */
+
+.profile-wrapper .profile-panel {
+    position: absolute;
+
+    top: calc(100% + 10px);
+    right: 0;
+
+    width: 320px;
+
+    background-color: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+
+    overflow: hidden;
+
+    z-index: 1000;
+
+    animation: profileSlideIn 0.2s ease-out;
+}
+
+
+/* =========================
+   Profile Animation
+========================= */
+
+@keyframes profileSlideIn {
+
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 500px) {
+
+    .notification-wrapper .notification-panel {
+        position: fixed;
+
+        top: 60px;
+        left: 12px;
+        right: 12px;
+
+        width: auto;
+    }
+
+
+    .profile-wrapper .profile-panel {
+        position: fixed;
+
+        top: 60px;
+        left: 12px;
+        right: 12px;
+
+        width: auto;
+    }
 }

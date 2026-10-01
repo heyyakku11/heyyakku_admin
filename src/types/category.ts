@@ -1,0 +1,11 @@
+export interface Category{
+    id:string,
+    name:string,
+    slug:string,
+    isActive:boolean,
+    createdAt:Date
+}
+
+export interface CreateCategoryRequest{
+    name:string,
+}
