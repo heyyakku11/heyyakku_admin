@@ -1,47 +1,7 @@
 import './polls.css';
-
-const polls = [
-    {
-        id: "747785fc-7bcf-4f7d-ae74-c7e9788bf200",
-        creatorId: "2db16e76-7771-4d16-83d1-fbcbc713a04a",
-        question: "Which destination would you visit tomorrow if money was no issue?",
-        status: "active",
-        optionType: "text",
-        totalVoteCount: 1,
-        expiresAt: null,
-        createdAt: "2026-09-28T07:05:00.020135Z"
-    },
-    {
-        id: "6c3ddc22-24fe-483f-b49e-ab58c81164d4",
-        creatorId: "8bb5af2c-2749-4470-ac3a-e81be3eab3c7",
-        question: "What makes a weekend perfect?",
-        status: "active",
-        optionType: "text",
-        totalVoteCount: 1,
-        expiresAt: null,
-        createdAt: "2026-09-28T06:57:54.926159Z"
-    },
-    {
-        id: "ef0b54df-edb6-4cc7-a0b7-f1444008748d",
-        creatorId: "8bb5af2c-2749-4470-ac3a-e81be3eab3c7",
-        question: "Which skill would you instantly master?",
-        status: "active",
-        optionType: "text",
-        totalVoteCount: 1,
-        expiresAt: null,
-        createdAt: "2026-09-28T06:57:13.51629Z"
-    },
-    {
-        id: "984e7f3b-d7fb-4acd-bc89-a3218678d461",
-        creatorId: "8bb5af2c-2749-4470-ac3a-e81be3eab3c7",
-        question: "Should I Text her?",
-        status: "active",
-        optionType: "text",
-        totalVoteCount: 1,
-        expiresAt: null,
-        createdAt: "2026-09-28T06:55:58.158127Z"
-    }
-];
+import { useEffect, useState } from 'react';
+import { getPolls } from '../../services/pollService';
+import type { Poll } from '../../types/poll';
 
 function formatDate(date: string) {
     return new Date(date).toLocaleDateString("en-IN", {
@@ -51,7 +11,74 @@ function formatDate(date: string) {
     });
 }
 
+function formatDateTime(date: string) {
+    return new Date(date).toLocaleString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+}
+
 function Polls() {
+    const [polls, setPolls] = useState<Poll[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    
+        useEffect(() => {
+            fetchPolls();
+        }, []);
+
+    async function fetchPolls() {
+        
+            try {
+    
+                setLoading(true);
+                setError(null);
+    
+                const response = await getPolls();
+    
+                if (response.success) {
+                    setPolls(response.data ?? []);
+                } else {
+                    setError(response.message);
+                }
+    
+            } catch (ex) {
+    
+                console.error(ex);
+    
+                if (ex instanceof Error) {
+                    setError(ex.message);
+                } else {
+                    setError("Failed to load polls.");
+                }
+    
+            } finally {
+    
+                setLoading(false);
+    
+            }
+        }
+
+        if (loading) {
+        return (
+            <div className="polls-section">
+                <p>Loading polls...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="polls-section">
+                <p>Failed to load polls: {error}</p>
+            </div>
+        );
+    }
+    
+
     return (
         <div className="polls-section">
 

@@ -1,23 +1,7 @@
 import './users.css';
-
-const users = [
-    {
-        id: "2db16e76-7771-4d16-83d1-fbcbc713a04a",
-        email: "risouddesaunni-1952@yopmail.com",
-        displayName: "yakku@90317",
-        status: "active",
-        lastLoginAt: "2026-09-28T07:03:16.360464Z",
-        createdAt: "2026-09-28T07:03:16.36006Z"
-    },
-    {
-        id: "8bb5af2c-2749-4470-ac3a-e81be3eab3c7",
-        email: "deiqueizahoiprou-3704@yopmail.com",
-        displayName: "yakku@64389",
-        status: "active",
-        lastLoginAt: "2026-09-28T06:53:57.877645Z",
-        createdAt: "2026-09-28T06:53:57.877137Z"
-    }
-];
+import { useEffect, useState } from 'react';
+import { getUsers } from '../../services/userService';
+import type { User } from '../../types/user';
 
 function formatDate(date: string) {
     return new Date(date).toLocaleDateString("en-IN", {
@@ -38,6 +22,63 @@ function formatDateTime(date: string) {
 }
 
 function Users() {
+    const [users, setUsers] = useState<User[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        fetchUsers();
+    }, []);
+
+
+    async function fetchUsers() {
+
+        try {
+
+            setLoading(true);
+            setError(null);
+
+            const response = await getUsers();
+
+            if (response.success) {
+                setUsers(response.data ?? []);
+            } else {
+                setError(response.message);
+            }
+
+        } catch (ex) {
+
+            console.error(ex);
+
+            if (ex instanceof Error) {
+                setError(ex.message);
+            } else {
+                setError("Failed to load users.");
+            }
+
+        } finally {
+
+            setLoading(false);
+
+        }
+    }
+
+     if (loading) {
+        return (
+            <div className="users-section">
+                <p>Loading users...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="users-section">
+                <p>Failed to load users: {error}</p>
+            </div>
+        );
+    }
+
     return (
         <div className="users-section">
 

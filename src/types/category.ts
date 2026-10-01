@@ -3,7 +3,7 @@ export interface Category{
     name:string,
     slug:string,
     isActive:boolean,
-    createdAt:Date
+    createdAt:string,
 }
 
 export interface CreateCategoryRequest{

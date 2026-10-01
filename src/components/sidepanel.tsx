@@ -30,6 +30,11 @@ const menuItems = [
         icon: faPerson
     },
     {
+        id: "guests",
+        label: "Guests",
+        icon: faPerson
+    },
+    {
         id: "polls",
         label: "Polls",
         icon: faPoll

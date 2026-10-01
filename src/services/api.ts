@@ -1,16 +1,17 @@
-import { config } from "@fortawesome/fontawesome-svg-core";
 import axios from "axios";
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 const api = axios.create({
     //baseURL: import.meta.env.VITE_API_BASE_URL,
-    baseURL: "https://heyyakku-backend.onrender.com"
+    baseURL: API_BASE_URL
 });
 
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem("accesToken");
+    const token = localStorage.getItem("accessToken");
 
     if(token){
-        config.headers.Authorization='Bearer ${token}';
+        config.headers.Authorization=`Bearer ${token}`;
     }
     return config;
 })

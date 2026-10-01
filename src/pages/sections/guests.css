@@ -1,0 +1,316 @@
+/* =========================
+   Guests Section
+========================= */
+
+.guests-section {
+    padding: 24px;
+}
+
+
+/* =========================
+   Header
+========================= */
+
+.guests-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 24px;
+}
+
+.guests-header h2 {
+    margin: 0;
+
+    font-size: 24px;
+    font-weight: 600;
+
+    color: #111827;
+}
+
+.guests-header p {
+    margin: 5px 0 0;
+
+    font-size: 14px;
+    color: #6b7280;
+}
+
+.guest-count {
+    padding: 6px 12px;
+
+    border-radius: 20px;
+
+    background-color: #f3f4f6;
+    color: #4b5563;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+
+/* =========================
+   Guests Container
+========================= */
+
+.guests-container {
+    display: grid;
+
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(300px, 1fr)
+    );
+
+    gap: 18px;
+}
+
+
+/* =========================
+   Guest Card
+========================= */
+
+.guest-card {
+    padding: 18px;
+
+    background-color: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+
+    transition:
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+}
+
+.guest-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+
+/* =========================
+   Guest Card Header
+========================= */
+
+.guest-card-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 12px;
+}
+
+.guest-identity {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    min-width: 0;
+}
+
+
+/* =========================
+   Guest Avatar
+========================= */
+
+.guest-avatar {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 10px;
+
+    background-color: #f1f5f9;
+
+    color: #334155;
+
+    font-size: 16px;
+    font-weight: 600;
+}
+
+
+/* =========================
+   Guest Info
+========================= */
+
+.guest-info {
+    min-width: 0;
+}
+
+.guest-info h3 {
+    margin: 0 0 4px;
+
+    color: #111827;
+
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.guest-info p {
+    margin: 0;
+
+    max-width: 180px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    color: #9ca3af;
+
+    font-size: 11px;
+}
+
+
+/* =========================
+   Guest Status
+========================= */
+
+.guest-status {
+    padding: 5px 9px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    flex-shrink: 0;
+
+    text-transform: capitalize;
+}
+
+.guest-status.active {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.guest-status.inactive {
+    background-color: #f3f4f6;
+    color: #4b5563;
+}
+
+.guest-status.expired {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+
+/* =========================
+   Divider
+========================= */
+
+.guest-divider {
+    height: 1px;
+
+    margin: 16px 0;
+
+    background-color: #e5e7eb;
+}
+
+
+/* =========================
+   Guest Details
+========================= */
+
+.guest-details {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 12px;
+}
+
+.guest-detail {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+
+    min-width: 0;
+}
+
+.detail-label {
+    color: #9ca3af;
+
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.detail-value {
+    color: #374151;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+/* =========================
+   Loading / Error
+========================= */
+
+.guests-section > p {
+    color: #6b7280;
+
+    font-size: 14px;
+}
+
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 700px) {
+
+    .guests-section {
+        padding: 18px;
+    }
+
+    .guests-header {
+        align-items: flex-start;
+
+        gap: 12px;
+    }
+
+    .guests-header h2 {
+        font-size: 21px;
+    }
+
+    .guests-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .guests-header {
+        flex-direction: column;
+    }
+
+    .guest-count {
+        align-self: flex-start;
+    }
+
+    .guest-details {
+        grid-template-columns: 1fr;
+    }
+
+    .guest-card {
+        padding: 16px;
+    }
+}
