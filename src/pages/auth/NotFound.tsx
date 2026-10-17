@@ -11,7 +11,6 @@ function NotFound({ homePath, homeLabel }: NotFoundProps) {
     return (
         <div className="auth-notfound">
             <div className="auth-brand">
-                <span className="auth-brand-mark" aria-hidden="true">y</span>
                 Yakku
             </div>
             <div className="auth-notfound-code" aria-hidden="true">404</div>

@@ -1,0 +1,293 @@
+.dt-card {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.dt-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+}
+
+.dt-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.dt-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.dt-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 36px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    color: #6b7280;
+}
+
+.dt-search:focus-within {
+    border-color: #d02e62;
+    box-shadow: 0 0 0 3px rgba(208, 46, 98, 0.1);
+}
+
+.dt-search input {
+    width: 160px;
+    border: none;
+    outline: none;
+    background: transparent;
+    font: inherit;
+    font-size: 14px;
+    color: #111827;
+}
+
+.dt-select,
+.dt-btn {
+    height: 36px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    font: inherit;
+    font-size: 14px;
+    color: #374151;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.dt-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dt-select:hover,
+.dt-btn:hover:not(:disabled) {
+    background: #f9fafb;
+}
+
+.dt-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.dt-scroll {
+    overflow-x: auto;
+    padding: 0 12px 12px;
+}
+
+.dt-table {
+    width: 100%;
+    min-width: 760px;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 14px;
+    color: #111827;
+}
+
+.dt-table thead th {
+    padding: 11px 12px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 500;
+    color: #6b7280;
+    background: #f9fafb;
+    white-space: nowrap;
+}
+
+.dt-table thead th:first-child {
+    border-radius: 8px 0 0 8px;
+}
+
+.dt-table thead th:last-child {
+    border-radius: 0 8px 8px 0;
+}
+
+.dt-table tbody td {
+    padding: 13px 12px;
+    border-bottom: 1px solid #f1f1f3;
+    vertical-align: middle;
+}
+
+.dt-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.dt-table tbody tr:hover {
+    background: #fffafb;
+}
+
+.dt-table tbody tr.selected {
+    background: #fdecf1;
+}
+
+.dt-check {
+    width: 36px;
+}
+
+.dt-check input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: #d02e62;
+    cursor: pointer;
+}
+
+.dt-sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.dt-sort-icon {
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+.dt-sort-icon.on {
+    color: #d02e62;
+}
+
+.dt-actions-head {
+    width: 96px;
+}
+
+.dt-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.dt-icon-btn {
+    width: 30px;
+    height: 30px;
+    display: grid;
+    place-items: center;
+    color: #4b5563;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.dt-icon-btn:hover {
+    color: #d02e62;
+    background: #fdecf1;
+    border-color: #f6c6d5;
+}
+
+.dt-empty {
+    padding: 36px 12px !important;
+    text-align: center;
+    color: #6b7280;
+}
+
+/* Identity cell: avatar + name */
+
+.dt-identity {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.dt-avatar {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, #e07a5f, #d02e62);
+    border-radius: 50%;
+}
+
+.dt-muted {
+    color: #6b7280;
+}
+
+.dt-mono {
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 13px;
+}
+
+.dt-clip {
+    max-width: 320px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dt-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 13px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    text-transform: capitalize;
+}
+
+/* Status pill */
+
+.dt-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: capitalize;
+    border: 1px solid;
+    border-radius: 6px;
+    background: #fff;
+}
+
+.dt-pill-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+.dt-pill--active {
+    color: #067647;
+    border-color: #17b26a;
+}
+
+.dt-pill--inactive {
+    color: #b54708;
+    border-color: #f5b800;
+}
+
+.dt-pill--suspended {
+    color: #b42318;
+    border-color: #f04438;
+}
+
+.dt-pill--expired {
+    color: #6b7280;
+    border-color: #d1d5db;
+}

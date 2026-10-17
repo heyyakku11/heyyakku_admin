@@ -1,5 +1,7 @@
 import './polls.css';
+import DataTable, { StatusPill, type Column } from '../../components/DataTable';
 import { DUMMY_POLLS } from '../../data/dummyData';
+import type { Poll } from '../../types/poll';
 
 function formatDate(date: string) {
     return new Date(date).toLocaleDateString("en-IN", {
@@ -19,6 +21,47 @@ function formatDateTime(date: string) {
     });
 }
 
+const columns: Column<Poll>[] = [
+    {
+        key: 'question',
+        label: 'Question',
+        sortValue: (p) => p.question.toLowerCase(),
+        render: (p) => <div className="dt-clip" title={p.question}>{p.question}</div>,
+    },
+    {
+        key: 'votes',
+        label: 'Total votes',
+        sortValue: (p) => p.totalVoteCount,
+        render: (p) => p.totalVoteCount,
+    },
+    {
+        key: 'optionType',
+        label: 'Option type',
+        sortValue: (p) => p.optionType,
+        render: (p) => <span className="dt-tag">{p.optionType}</span>,
+    },
+    {
+        key: 'expires',
+        label: 'Expires',
+        sortValue: (p) => p.expiresAt ?? '',
+        render: (p) => (
+            <span className="dt-muted">{p.expiresAt ? formatDateTime(p.expiresAt) : 'No expiry'}</span>
+        ),
+    },
+    {
+        key: 'created',
+        label: 'Created',
+        sortValue: (p) => p.createdAt,
+        render: (p) => <span className="dt-muted">{formatDate(p.createdAt)}</span>,
+    },
+    {
+        key: 'status',
+        label: 'Status',
+        sortValue: (p) => p.status,
+        render: (p) => <StatusPill status={p.status} />,
+    },
+];
+
 function Polls() {
     const polls = DUMMY_POLLS;
 
@@ -36,89 +79,27 @@ function Polls() {
                 </span>
             </div>
 
-            <div className="polls-container">
-
-                {polls.map((poll) => (
-
-                    <div className="poll-card" key={poll.id}>
-
-                        {/* Top section */}
-                        <div className="poll-card-top">
-
-                            <span className={`poll-status ${poll.status}`}>
-                                {poll.status}
-                            </span>
-
-                            <button className="poll-menu">
-                                ⋮
-                            </button>
-
-                        </div>
-
-                        {/* Question */}
-                        <h3 className="poll-question">
-                            {poll.question}
-                        </h3>
-
-                        {/* Divider */}
-                        <div className="poll-divider"></div>
-
-                        {/* Statistics */}
-                        <div className="poll-stats">
-
-                            <div className="poll-stat">
-                                <span className="stat-value">
-                                    {poll.totalVoteCount}
-                                </span>
-
-                                <span className="stat-label">
-                                    Total Votes
-                                </span>
-                            </div>
-
-                            <div className="poll-stat">
-                                <span className="stat-value">
-                                    {poll.optionType}
-                                </span>
-
-                                <span className="stat-label">
-                                    Option Type
-                                </span>
-                            </div>
-
-                            <div className="poll-stat">
-                                <span className="stat-value">
-                                    {poll.expiresAt
-                                        ? formatDateTime(poll.expiresAt)
-                                        : "No expiry"
-                                    }
-                                </span>
-
-                                <span className="stat-label">
-                                    Expires
-                                </span>
-                            </div>
-
-                        </div>
-
-                        {/* Footer */}
-                        <div className="poll-card-footer">
-
-                            <span>
-                                Created {formatDate(poll.createdAt)}
-                            </span>
-
-                            <button className="view-poll-button">
-                                View Poll →
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                ))}
-
-            </div>
+            <DataTable
+                title="All Polls"
+                rows={polls}
+                columns={columns}
+                getId={(p) => p.id}
+                searchText={(p) => `${p.question} ${p.id}`}
+                searchPlaceholder="Search poll"
+                statusOf={(p) => p.status}
+                statusOptions={['active', 'inactive', 'expired']}
+                exportName="polls"
+                exportRow={(p) => ({
+                    id: p.id,
+                    question: p.question,
+                    creatorId: p.creatorId,
+                    status: p.status,
+                    optionType: p.optionType,
+                    totalVoteCount: p.totalVoteCount,
+                    expiresAt: p.expiresAt ?? '',
+                    createdAt: p.createdAt,
+                })}
+            />
 
         </div>
     );

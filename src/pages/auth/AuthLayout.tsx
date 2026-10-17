@@ -10,7 +10,6 @@ function AuthLayout({ children }: AuthLayoutProps) {
         <div className="auth-page">
             <main className="auth-main">
                 <div className="auth-brand">
-                    <span className="auth-brand-mark" aria-hidden="true">y</span>
                     Yakku
                 </div>
                 <div className="auth-form-wrap">{children}</div>

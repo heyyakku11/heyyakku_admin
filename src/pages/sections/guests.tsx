@@ -1,5 +1,7 @@
 import './guests.css';
+import DataTable, { StatusPill, type Column } from '../../components/DataTable';
 import { DUMMY_GUESTS } from '../../data/dummyData';
+import type { Guest } from '../../types/guest';
 
 function formatDate(date: string) {
     return new Date(date).toLocaleDateString("en-IN", {
@@ -18,6 +20,44 @@ function formatDateTime(date: string) {
         minute: "2-digit"
     });
 }
+
+const columns: Column<Guest>[] = [
+    {
+        key: 'id',
+        label: 'Guest ID',
+        sortValue: (g) => g.id,
+        render: (g) => (
+            <div className="dt-identity">
+                <div className="dt-avatar">G</div>
+                <span className="dt-mono">{g.id}</span>
+            </div>
+        ),
+    },
+    {
+        key: 'lastSeen',
+        label: 'Last seen',
+        sortValue: (g) => g.lastSeenAt,
+        render: (g) => <span className="dt-muted">{formatDateTime(g.lastSeenAt)}</span>,
+    },
+    {
+        key: 'expires',
+        label: 'Expires',
+        sortValue: (g) => g.expiresAt,
+        render: (g) => <span className="dt-muted">{formatDateTime(g.expiresAt)}</span>,
+    },
+    {
+        key: 'created',
+        label: 'Created',
+        sortValue: (g) => g.createdAt,
+        render: (g) => <span className="dt-muted">{formatDate(g.createdAt)}</span>,
+    },
+    {
+        key: 'status',
+        label: 'Status',
+        sortValue: (g) => g.status,
+        render: (g) => <StatusPill status={g.status} />,
+    },
+];
 
 function Guests() {
 
@@ -43,102 +83,24 @@ function Guests() {
 
             </div>
 
-            {/* Guests */}
-            <div className="guests-container">
-
-                {guests.map((guest) => (
-
-                    <div
-                        className="guest-card"
-                        key={guest.id}
-                    >
-
-                        {/* Guest Header */}
-                        <div className="guest-card-header">
-
-                            <div className="guest-identity">
-
-                                <div className="guest-avatar">
-                                    G
-                                </div>
-
-                                <div className="guest-info">
-
-                                    <h3>
-                                        Guest
-                                    </h3>
-
-                                    <p>
-                                        {guest.id}
-                                    </p>
-
-                                </div>
-
-                            </div>
-
-                            <span
-                                className={`guest-status ${guest.status}`}
-                            >
-                                {guest.status}
-                            </span>
-
-                        </div>
-
-                        {/* Divider */}
-                        <div className="guest-divider"></div>
-
-                        {/* Guest Details */}
-                        <div className="guest-details">
-
-                            <div className="guest-detail">
-
-                                <span className="detail-label">
-                                    Last Seen
-                                </span>
-
-                                <span className="detail-value">
-                                    {formatDateTime(
-                                        guest.lastSeenAt
-                                    )}
-                                </span>
-
-                            </div>
-
-                            <div className="guest-detail">
-
-                                <span className="detail-label">
-                                    Expires
-                                </span>
-
-                                <span className="detail-value">
-                                    {formatDateTime(
-                                        guest.expiresAt
-                                    )}
-                                </span>
-
-                            </div>
-
-                            <div className="guest-detail">
-
-                                <span className="detail-label">
-                                    Created
-                                </span>
-
-                                <span className="detail-value">
-                                    {formatDate(
-                                        guest.createdAt
-                                    )}
-                                </span>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                ))}
-
-            </div>
+            <DataTable
+                title="All Guests"
+                rows={guests}
+                columns={columns}
+                getId={(g) => g.id}
+                searchText={(g) => g.id}
+                searchPlaceholder="Search guest"
+                statusOf={(g) => g.status}
+                statusOptions={['active', 'inactive', 'expired']}
+                exportName="guests"
+                exportRow={(g) => ({
+                    id: g.id,
+                    status: g.status,
+                    createdAt: g.createdAt,
+                    lastSeenAt: g.lastSeenAt,
+                    expiresAt: g.expiresAt,
+                })}
+            />
 
         </div>
     );
