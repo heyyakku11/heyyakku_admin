@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 
 import { adminResetPassword } from '../../services/authService';
 import { getErrorMessage } from '../../utils/apiError';
-import AuthLayout from './AuthLayout';
+import StandaloneLayout from './StandaloneLayout';
 import PasswordInput from './PasswordInput';
 import PasswordRules from './PasswordRules';
 import { passwordRulesPass } from '../../utils/passwordRules';
@@ -44,7 +44,7 @@ function ResetPassword() {
 
     if (!token) {
         return (
-            <AuthLayout>
+            <StandaloneLayout>
                 <div className="auth-form auth-state">
                     <h1>Invalid reset link</h1>
                     <p className="auth-sub">This link is missing its token. Request a new password reset email.</p>
@@ -52,13 +52,13 @@ function ResetPassword() {
                         Request a new link
                     </Link>
                 </div>
-            </AuthLayout>
+            </StandaloneLayout>
         );
     }
 
     if (done) {
         return (
-            <AuthLayout>
+            <StandaloneLayout>
                 <div className="auth-form auth-state">
                     <h1>Password updated</h1>
                     <p className="auth-sub">Your password was reset. Sign in with your new password.</p>
@@ -66,12 +66,12 @@ function ResetPassword() {
                         Go to sign in
                     </Link>
                 </div>
-            </AuthLayout>
+            </StandaloneLayout>
         );
     }
 
     return (
-        <AuthLayout>
+        <StandaloneLayout>
             <form className="auth-form" onSubmit={onSubmit} noValidate>
                 <h1>Set a new password</h1>
                 <p className="auth-sub">Choose a new password for your admin account.</p>
@@ -112,7 +112,7 @@ function ResetPassword() {
                     {loading ? 'Saving…' : 'Reset password'}
                 </button>
             </form>
-        </AuthLayout>
+        </StandaloneLayout>
     );
 }
 

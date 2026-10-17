@@ -1,5 +1,6 @@
 .auth-page,
 .auth-notfound,
+.auth-standalone,
 .auth-page-card {
     --auth-primary: #d02e62;
     --auth-primary-dark: #b3234f;
@@ -115,7 +116,7 @@
     color: var(--auth-text);
     background: #fff;
     border: 1px solid var(--auth-border);
-    border-radius: 10px;
+    border-radius: 6px;
     outline: none;
     transition: border-color 0.15s, box-shadow 0.15s;
 }
@@ -159,9 +160,26 @@
 
 .auth-row {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
     margin: -6px 0 20px;
     font-size: 14px;
+}
+
+.auth-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.auth-check input {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    accent-color: var(--auth-primary);
+    cursor: pointer;
 }
 
 .auth-btn {
@@ -173,7 +191,7 @@
     color: #fff;
     background: var(--auth-primary);
     border: 1px solid var(--auth-primary);
-    border-radius: 10px;
+    border-radius: 6px;
     cursor: pointer;
     transition: background 0.15s, opacity 0.15s;
 }
@@ -201,7 +219,7 @@
 .auth-alert {
     margin: 0 0 18px;
     padding: 10px 14px;
-    border-radius: 10px;
+    border-radius: 6px;
     font-size: 14px;
     line-height: 1.45;
 }
@@ -396,6 +414,39 @@
 .auth-rules li.ok::before {
     content: '✓';
     color: var(--auth-success);
+}
+
+/* ---------- Standalone pages (forgot / reset / verify) ---------- */
+
+.auth-standalone {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 24px 16px;
+    box-sizing: border-box;
+    background: var(--auth-sand);
+    color: var(--auth-text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.auth-standalone-card {
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+}
+
+.auth-standalone-card .auth-btn {
+    display: block;
+    text-decoration: none;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.auth-standalone-card .auth-form {
+    max-width: none;
 }
 
 /* ---------- 404 ---------- */

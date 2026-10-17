@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { adminForgotPassword } from '../../services/authService';
 import { EMAIL_RE, getErrorMessage } from '../../utils/apiError';
-import AuthLayout from './AuthLayout';
+import StandaloneLayout from './StandaloneLayout';
 
 function ForgotPassword() {
     const [email, setEmail] = useState('');
@@ -36,7 +36,7 @@ function ForgotPassword() {
 
     if (done) {
         return (
-            <AuthLayout>
+            <StandaloneLayout>
                 <div className="auth-form auth-state">
                     <h1>Check your email</h1>
                     <p className="auth-sub">
@@ -47,12 +47,12 @@ function ForgotPassword() {
                         Back to sign in
                     </Link>
                 </div>
-            </AuthLayout>
+            </StandaloneLayout>
         );
     }
 
     return (
-        <AuthLayout>
+        <StandaloneLayout>
             <form className="auth-form" onSubmit={onSubmit} noValidate>
                 <h1>Forgot password?</h1>
                 <p className="auth-sub">
@@ -84,7 +84,7 @@ function ForgotPassword() {
                     <Link className="auth-link" to="/login">Back to sign in</Link>
                 </p>
             </form>
-        </AuthLayout>
+        </StandaloneLayout>
     );
 }
 

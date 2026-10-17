@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 import { adminLogin } from '../../services/authService';
 import { EMAIL_RE, getErrorMessage } from '../../utils/apiError';
+import { REMEMBER_DAYS, startSession } from '../../utils/session';
 import AuthLayout from './AuthLayout';
 import PasswordInput from './PasswordInput';
 
@@ -13,6 +14,7 @@ interface LoginProps {
 function Login({ setLogin }: LoginProps) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [remember, setRemember] = useState(true);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -36,6 +38,7 @@ function Login({ setLogin }: LoginProps) {
             localStorage.setItem('refreshToken', response.data.refreshToken);
             localStorage.setItem('email', response.data.email);
             localStorage.setItem('role', response.data.role);
+            startSession(remember);
             setLogin(true);
         } catch (ex) {
             setError(getErrorMessage(ex));
@@ -83,6 +86,15 @@ function Login({ setLogin }: LoginProps) {
                 </div>
 
                 <div className="auth-row">
+                    <label className="auth-check">
+                        <input
+                            type="checkbox"
+                            checked={remember}
+                            onChange={(e) => setRemember(e.target.checked)}
+                            disabled={loading}
+                        />
+                        Remember for {REMEMBER_DAYS} days
+                    </label>
                     <Link className="auth-link" to="/forgot-password">Forgot password</Link>
                 </div>
 

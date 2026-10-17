@@ -8,37 +8,42 @@ import ForgotPassword from './pages/auth/ForgotPassword';
 import ResetPassword from './pages/auth/ResetPassword';
 import VerifyEmail from './pages/auth/VerifyEmail';
 import NotFound from './pages/auth/NotFound';
+import { clearSession, isSessionValid } from './utils/session';
 
 function App() {
 
     const [isAdminLogin, setLogin] = useState(() => {
-        const accessToken = localStorage.getItem("accessToken");
-
-        return !!accessToken;
+        if (isSessionValid()) return true;
+        clearSession();
+        return false;
     });
 
     return (
         <BrowserRouter>
-            {isAdminLogin
-                ? (
-                    <Routes>
-                        <Route path="/" element={<Dashboard setLogin={setLogin} />} />
-                        <Route path="/login" element={<Navigate to="/" replace />} />
-                        <Route path="*" element={<NotFound homePath="/" homeLabel="Back to dashboard" />} />
-                    </Routes>
-                )
-                : (
-                    <Routes>
-                        <Route path="/" element={<Navigate to="/login" replace />} />
-                        <Route path="/login" element={<Login setLogin={setLogin} />} />
-                        <Route path="/register" element={<Register />} />
-                        <Route path="/forgot-password" element={<ForgotPassword />} />
-                        <Route path="/reset-password" element={<ResetPassword />} />
-                        <Route path="/verify-email" element={<VerifyEmail />} />
-                        <Route path="*" element={<NotFound homePath="/login" homeLabel="Go to sign in" />} />
-                    </Routes>
-                )
-            }
+            <Routes>
+                {/* Standalone pages: reachable from email links regardless of login state */}
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
+
+                {isAdminLogin
+                    ? (
+                        <>
+                            <Route path="/" element={<Dashboard setLogin={setLogin} />} />
+                            <Route path="/login" element={<Navigate to="/" replace />} />
+                            <Route path="*" element={<NotFound homePath="/" homeLabel="Back to dashboard" />} />
+                        </>
+                    )
+                    : (
+                        <>
+                            <Route path="/" element={<Navigate to="/login" replace />} />
+                            <Route path="/login" element={<Login setLogin={setLogin} />} />
+                            <Route path="/register" element={<Register />} />
+                            <Route path="*" element={<NotFound homePath="/login" homeLabel="Go to sign in" />} />
+                        </>
+                    )
+                }
+            </Routes>
         </BrowserRouter>
     );
 }

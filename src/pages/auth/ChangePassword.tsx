@@ -5,6 +5,7 @@ import { getErrorMessage } from '../../utils/apiError';
 import PasswordInput from './PasswordInput';
 import PasswordRules from './PasswordRules';
 import { passwordRulesPass } from '../../utils/passwordRules';
+import { clearSession } from '../../utils/session';
 import './auth.css';
 
 interface ChangePasswordProps {
@@ -38,8 +39,7 @@ function ChangePassword({ setLogin }: ChangePasswordProps) {
             // The backend signs out every session, so drop the local one too.
             setDone(true);
             window.setTimeout(() => {
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('refreshToken');
+                clearSession();
                 setLogin(false);
             }, 2000);
         } catch (ex) {

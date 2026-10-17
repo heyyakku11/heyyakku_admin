@@ -3,7 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 
 import { adminVerifyEmail } from '../../services/authService';
 import { getErrorMessage } from '../../utils/apiError';
-import AuthLayout from './AuthLayout';
+import StandaloneLayout from './StandaloneLayout';
 
 type Status = { kind: 'loading' } | { kind: 'ok' } | { kind: 'error'; message: string };
 
@@ -36,7 +36,7 @@ function VerifyEmail() {
     }, [token]);
 
     return (
-        <AuthLayout>
+        <StandaloneLayout>
             <div className="auth-form auth-state">
                 {status.kind === 'loading' && (
                     <>
@@ -63,7 +63,7 @@ function VerifyEmail() {
                     </>
                 )}
             </div>
-        </AuthLayout>
+        </StandaloneLayout>
     );
 }
 

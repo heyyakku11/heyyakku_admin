@@ -11,6 +11,7 @@ import {
 import { useState } from 'react';
 import { adminLogout } from '../services/authService';
 import type { RefreshRequest } from '../types/auth';
+import { clearSession } from '../utils/session';
 
 interface SidePanelProps {
     setLogin: React.Dispatch<React.SetStateAction<boolean>>;
@@ -83,8 +84,7 @@ function SidePanel({setLogin, activeSection, setActiveSection}:SidePanelProps) {
 
     } finally {
         // Always clear client authentication state
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
+        clearSession();
 
         setLogin(false);
         setLoading(false);
