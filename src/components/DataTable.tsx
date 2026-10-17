@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 import './datatable.css';
 
 export interface Column<T> {
@@ -57,8 +57,6 @@ function DataTable<T>({
     const [query, setQuery] = useState('');
     const [status, setStatus] = useState('all');
     const [sort, setSort] = useState<{ key: string; dir: 'asc' | 'desc' } | null>(null);
-    const [selected, setSelected] = useState<Set<string>>(new Set());
-    const headCheckbox = useRef<HTMLInputElement>(null);
 
     const visible = useMemo(() => {
         const q = query.trim().toLowerCase();
@@ -80,34 +78,6 @@ function DataTable<T>({
         return result;
     }, [rows, query, status, sort, columns, statusOf, searchText]);
 
-    const visibleIds = visible.map(getId);
-    const selectedVisible = visibleIds.filter((id) => selected.has(id)).length;
-    const allSelected = visibleIds.length > 0 && selectedVisible === visibleIds.length;
-
-    useEffect(() => {
-        if (headCheckbox.current) {
-            headCheckbox.current.indeterminate = selectedVisible > 0 && !allSelected;
-        }
-    }, [selectedVisible, allSelected]);
-
-    function toggleAll() {
-        setSelected((prev) => {
-            const next = new Set(prev);
-            if (allSelected) visibleIds.forEach((id) => next.delete(id));
-            else visibleIds.forEach((id) => next.add(id));
-            return next;
-        });
-    }
-
-    function toggleOne(id: string) {
-        setSelected((prev) => {
-            const next = new Set(prev);
-            if (next.has(id)) next.delete(id);
-            else next.add(id);
-            return next;
-        });
-    }
-
     function toggleSort(col: Column<T>) {
         if (!col.sortValue) return;
         setSort((prev) =>
@@ -116,8 +86,7 @@ function DataTable<T>({
     }
 
     function exportCsv() {
-        const source = selectedVisible > 0 ? visible.filter((r) => selected.has(getId(r))) : visible;
-        const blob = new Blob([toCsv(source.map(exportRow))], { type: 'text/csv;charset=utf-8' });
+        const blob = new Blob([toCsv(visible.map(exportRow))], { type: 'text/csv;charset=utf-8' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -173,15 +142,6 @@ function DataTable<T>({
                 <table className="dt-table">
                     <thead>
                         <tr>
-                            <th className="dt-check">
-                                <input
-                                    ref={headCheckbox}
-                                    type="checkbox"
-                                    checked={allSelected}
-                                    onChange={toggleAll}
-                                    aria-label="Select all rows"
-                                />
-                            </th>
                             {columns.map((col) => (
                                 <th key={col.key} aria-sort={sort?.key === col.key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : undefined}>
                                     {col.sortValue ? (
@@ -203,15 +163,7 @@ function DataTable<T>({
                         {visible.map((row) => {
                             const id = getId(row);
                             return (
-                                <tr key={id} className={selected.has(id) ? 'selected' : ''}>
-                                    <td className="dt-check">
-                                        <input
-                                            type="checkbox"
-                                            checked={selected.has(id)}
-                                            onChange={() => toggleOne(id)}
-                                            aria-label="Select row"
-                                        />
-                                    </td>
+                                <tr key={id}>
                                     {columns.map((col) => (
                                         <td key={col.key}>{col.render(row)}</td>
                                     ))}
@@ -237,7 +189,7 @@ function DataTable<T>({
                         })}
                         {visible.length === 0 && (
                             <tr>
-                                <td className="dt-empty" colSpan={columns.length + 2}>
+                                <td className="dt-empty" colSpan={columns.length + 1}>
                                     No results found.
                                 </td>
                             </tr>

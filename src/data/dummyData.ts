@@ -1,6 +1,5 @@
 // Placeholder data for the dashboard sections. The sections no longer call the
 // backend; swap these constants for real data sources when the APIs return.
-import type { Category } from '../types/category';
 import type { Guest } from '../types/guest';
 import type { Poll } from '../types/poll';
 import type { User } from '../types/user';
@@ -10,33 +9,49 @@ export const DUMMY_USERS: User[] = [
         id: 'u-1001',
         email: 'aarav.sharma@example.com',
         displayName: 'Aarav Sharma',
+        countryCode: 'IN',
+        phone: '+91 98765 43210',
         status: 'active',
         lastLoginAt: '2026-10-16T09:42:11Z',
         createdAt: '2026-08-02T10:15:00Z',
+        planName: 'Premium',
+        planExpiresAt: '2027-02-02T10:15:00Z',
     },
     {
         id: 'u-1002',
         email: 'meera.iyer@example.com',
         displayName: 'Meera Iyer',
+        countryCode: 'US',
+        phone: '+1 415 555 0132',
         status: 'active',
         lastLoginAt: '2026-10-15T18:05:37Z',
         createdAt: '2026-08-19T14:30:00Z',
+        planName: 'Pro',
+        planExpiresAt: '2026-11-19T14:30:00Z',
     },
     {
         id: 'u-1003',
         email: 'rohan.verma@example.com',
         displayName: 'Rohan Verma',
+        countryCode: 'GB',
+        phone: '+44 7700 900123',
         status: 'inactive',
         lastLoginAt: '2026-09-04T07:12:50Z',
         createdAt: '2026-07-11T08:00:00Z',
+        planName: null,
+        planExpiresAt: null,
     },
     {
         id: 'u-1004',
         email: 'sana.khan@example.com',
         displayName: 'Sana Khan',
+        countryCode: 'AE',
+        phone: '+971 50 123 4567',
         status: 'suspended',
         lastLoginAt: '2026-09-28T21:40:09Z',
         createdAt: '2026-06-23T12:45:00Z',
+        planName: 'Pro',
+        planExpiresAt: '2026-10-01T12:45:00Z',
     },
 ];
 
@@ -112,11 +127,4 @@ export const DUMMY_POLLS: Poll[] = [
         expiresAt: '2026-10-01T00:00:00Z',
         createdAt: '2026-09-24T15:10:00Z',
     },
-];
-
-export const DUMMY_CATEGORIES: Category[] = [
-    { id: 'c-4001', name: 'Fashion', slug: 'fashion', isActive: true, createdAt: '2026-07-01T10:00:00Z' },
-    { id: 'c-4002', name: 'Food', slug: 'food', isActive: true, createdAt: '2026-07-01T10:05:00Z' },
-    { id: 'c-4003', name: 'Sports', slug: 'sports', isActive: true, createdAt: '2026-07-03T09:30:00Z' },
-    { id: 'c-4004', name: 'Travel', slug: 'travel', isActive: false, createdAt: '2026-07-10T14:20:00Z' },
 ];

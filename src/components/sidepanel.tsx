@@ -5,8 +5,7 @@ import {
     faPerson,
     faPoll,
     faGear,
-    faRightFromBracket,
-    faDisplay
+    faRightFromBracket
 } from "@fortawesome/free-solid-svg-icons";
 import { useState } from 'react';
 import { adminLogout } from '../services/authService';
@@ -31,19 +30,9 @@ const menuItems = [
         icon: faPerson
     },
     {
-        id: "guests",
-        label: "Guests",
-        icon: faPerson
-    },
-    {
         id: "polls",
         label: "Polls",
         icon: faPoll
-    },
-    {
-        id: "categories",
-        label: "Categories",
-        icon: faDisplay
     },
     {
         id: "settings",

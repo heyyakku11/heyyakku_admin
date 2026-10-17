@@ -68,17 +68,6 @@ function Polls() {
     return (
         <div className="polls-section">
 
-            <div className="polls-header">
-                <div>
-                    <h2>Polls</h2>
-                    <p>Manage and monitor polls created by users.</p>
-                </div>
-
-                <span className="poll-count">
-                    {polls.length} polls
-                </span>
-            </div>
-
             <DataTable
                 title="All Polls"
                 rows={polls}

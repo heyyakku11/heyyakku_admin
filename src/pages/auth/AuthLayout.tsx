@@ -39,7 +39,7 @@ function AuthLayout({ children }: AuthLayoutProps) {
                     </div>
                 </div>
                 <h2>Ask what you're really thinking.</h2>
-                <p>Manage polls, users and categories for Yakku, where friends answer honestly and nobody knows who said what.</p>
+                <p>Manage polls and users for Yakku, where friends answer honestly and nobody knows who said what.</p>
             </aside>
         </div>
     );

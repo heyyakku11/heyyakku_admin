@@ -2,15 +2,23 @@
 
 .dashboard{
     display: flex;
-    min-height:100vh;
+    height: 100vh;
+    overflow: hidden;
 }
 
 /* Main content */
 .mainDiv {
     flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
-/* Main page content */
+/* Main page content: only this area scrolls */
 .content {
-    padding: 30px;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 16px;
 }
