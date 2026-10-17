@@ -35,7 +35,7 @@ function Dashboard({setLogin}:DashboardProps){
                    {activeSection =="guests" && <Guests/>}
                    {activeSection =="polls" && <Polls/>}
                    {activeSection =="categories" && <Categories/>}
-                   {activeSection =="settings" && <Settings/>}
+                   {activeSection =="settings" && <Settings setLogin={setLogin}/>}
                </section>
 
             </div>

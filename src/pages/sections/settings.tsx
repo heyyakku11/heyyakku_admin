@@ -1,7 +1,13 @@
-function Settings(){
+import ChangePassword from '../auth/ChangePassword';
+
+interface SettingsProps {
+    setLogin: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+function Settings({ setLogin }: SettingsProps){
     return(
         <div className="settings-section">
-            <h2>this is setting section</h2>
+            <ChangePassword setLogin={setLogin} />
         </div>
     );
 }

@@ -9,6 +9,7 @@ export interface ApiResponse<T> {
 export interface ApiError {
     code: string;
     message: string;
+    field?: string | null;
 }
 
 export interface PaginationMeta {

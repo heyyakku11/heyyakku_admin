@@ -20,7 +20,7 @@
 
     font-size: 24px;
     font-weight: 700;
-    color: #2563eb;
+    color: #d02e62;
 }
 
 
@@ -77,8 +77,8 @@
 /* Active page */
 
 .nav-item.active {
-    background-color: #eff6ff;
-    color: #2563eb;
+    background-color: #fdecf1;
+    color: #d02e62;
 }
 
 
