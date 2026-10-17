@@ -34,7 +34,7 @@ function getNotificationIcon(type: Notification['type']) {
 
 function NotificationPanel({
     notifications,
-    setNotifications
+    onMarkAllAsRead
 }: NotificationPanelProps) {
 
     const unreadCount = notifications.filter(
@@ -55,7 +55,7 @@ function NotificationPanel({
                     </span>
                 </div>
 
-                <button className="mark-read-button">
+                <button className="mark-read-button" onClick={onMarkAllAsRead}>
                     Mark all as read
                 </button>
 

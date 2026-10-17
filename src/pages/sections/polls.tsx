@@ -1,7 +1,5 @@
 import './polls.css';
-import { useEffect, useState } from 'react';
-import { getPolls } from '../../services/pollService';
-import type { Poll } from '../../types/poll';
+import { DUMMY_POLLS } from '../../data/dummyData';
 
 function formatDate(date: string) {
     return new Date(date).toLocaleDateString("en-IN", {
@@ -22,62 +20,7 @@ function formatDateTime(date: string) {
 }
 
 function Polls() {
-    const [polls, setPolls] = useState<Poll[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    
-        useEffect(() => {
-            fetchPolls();
-        }, []);
-
-    async function fetchPolls() {
-        
-            try {
-    
-                setLoading(true);
-                setError(null);
-    
-                const response = await getPolls();
-    
-                if (response.success) {
-                    setPolls(response.data ?? []);
-                } else {
-                    setError(response.message);
-                }
-    
-            } catch (ex) {
-    
-                console.error(ex);
-    
-                if (ex instanceof Error) {
-                    setError(ex.message);
-                } else {
-                    setError("Failed to load polls.");
-                }
-    
-            } finally {
-    
-                setLoading(false);
-    
-            }
-        }
-
-        if (loading) {
-        return (
-            <div className="polls-section">
-                <p>Loading polls...</p>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="polls-section">
-                <p>Failed to load polls: {error}</p>
-            </div>
-        );
-    }
-    
+    const polls = DUMMY_POLLS;
 
     return (
         <div className="polls-section">

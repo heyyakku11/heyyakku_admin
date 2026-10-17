@@ -1,7 +1,5 @@
 import './users.css';
-import { useEffect, useState } from 'react';
-import { getUsers } from '../../services/userService';
-import type { User } from '../../types/user';
+import { DUMMY_USERS } from '../../data/dummyData';
 
 function formatDate(date: string) {
     return new Date(date).toLocaleDateString("en-IN", {
@@ -22,62 +20,7 @@ function formatDateTime(date: string) {
 }
 
 function Users() {
-    const [users, setUsers] = useState<User[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        fetchUsers();
-    }, []);
-
-
-    async function fetchUsers() {
-
-        try {
-
-            setLoading(true);
-            setError(null);
-
-            const response = await getUsers();
-
-            if (response.success) {
-                setUsers(response.data ?? []);
-            } else {
-                setError(response.message);
-            }
-
-        } catch (ex) {
-
-            console.error(ex);
-
-            if (ex instanceof Error) {
-                setError(ex.message);
-            } else {
-                setError("Failed to load users.");
-            }
-
-        } finally {
-
-            setLoading(false);
-
-        }
-    }
-
-     if (loading) {
-        return (
-            <div className="users-section">
-                <p>Loading users...</p>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="users-section">
-                <p>Failed to load users: {error}</p>
-            </div>
-        );
-    }
+    const users = DUMMY_USERS;
 
     return (
         <div className="users-section">

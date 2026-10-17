@@ -1,7 +1,5 @@
 import './guests.css';
-import { useEffect, useState } from 'react';
-import { getGuests } from '../../services/guestService';
-import type { Guest } from '../../types/guest';
+import { DUMMY_GUESTS } from '../../data/dummyData';
 
 function formatDate(date: string) {
     return new Date(date).toLocaleDateString("en-IN", {
@@ -23,61 +21,7 @@ function formatDateTime(date: string) {
 
 function Guests() {
 
-    const [guests, setGuests] = useState<Guest[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        fetchGuests();
-    }, []);
-
-    async function fetchGuests() {
-
-        try {
-
-            setLoading(true);
-            setError(null);
-
-            const response = await getGuests();
-
-            if (response.success) {
-                setGuests(response.data ?? []);
-            } else {
-                setError(response.message);
-            }
-
-        } catch (ex) {
-
-            console.error(ex);
-
-            if (ex instanceof Error) {
-                setError(ex.message);
-            } else {
-                setError("Failed to load guests.");
-            }
-
-        } finally {
-
-            setLoading(false);
-
-        }
-    }
-
-    if (loading) {
-        return (
-            <div className="guests-section">
-                <p>Loading guests...</p>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="guests-section">
-                <p>Failed to load guests: {error}</p>
-            </div>
-        );
-    }
+    const guests = DUMMY_GUESTS;
 
     return (
         <div className="guests-section">

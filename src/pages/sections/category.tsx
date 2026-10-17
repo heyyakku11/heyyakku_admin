@@ -1,7 +1,5 @@
 import './category.css';
-import { useEffect, useState } from 'react';
-import { getCategories } from '../../services/categoryService';
-import type { Category } from '../../types/category';
+import { DUMMY_CATEGORIES } from '../../data/dummyData';
 
 function formatDateTime(date: string) {
     return new Date(date).toLocaleString("en-IN", {
@@ -14,61 +12,7 @@ function formatDateTime(date: string) {
 }
 
 function Categories() {
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-     useEffect(() => {
-        fetchCategories();
-    }, []);
-
-    async function fetchCategories() {
-    
-            try {
-    
-                setLoading(true);
-                setError(null);
-    
-                const response = await getCategories();
-    
-                if (response.success) {
-                    setCategories(response.data ?? []);
-                } else {
-                    setError(response.message);
-                }
-    
-            } catch (ex) {
-    
-                console.error(ex);
-    
-                if (ex instanceof Error) {
-                    setError(ex.message);
-                } else {
-                    setError("Failed to load categories.");
-                }
-    
-            } finally {
-    
-                setLoading(false);
-    
-            }
-        }
-
-        if (loading) {
-        return (
-            <div className="categories-section">
-                <p>Loading categories...</p>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="categories-section">
-                <p>Failed to load categories: {error}</p>
-            </div>
-        );
-    }
+    const categories = DUMMY_CATEGORIES;
 
     function handleCreateCategory() {
         // Open create category modal

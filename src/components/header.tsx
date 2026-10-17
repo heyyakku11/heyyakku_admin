@@ -50,6 +50,10 @@ function Header() {
         notification => !notification.isRead
     ).length;
 
+    function handleMarkAllAsRead() {
+        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+    }
+
     function handleNotificationClick() {
         setIsNotificationOpen(prev => !prev);
     }
