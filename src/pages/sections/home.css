@@ -1,0 +1,62 @@
+.home-heading {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.home-heading h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #111827;
+}
+
+.home-count {
+    background: #f3f4f6;
+    color: #4b5563;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.home-checks-row {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding: 4px 4px 18px;
+    scroll-snap-type: x proximity;
+}
+
+.home-note {
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.home-error {
+    color: #b91c1c;
+}
+
+.home-error button {
+    margin-left: 6px;
+    cursor: pointer;
+}
+
+.home-week {
+    margin-left: auto;
+    padding: 8px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    font: inherit;
+}
+
+.home-add {
+    border: 0;
+    border-radius: 8px;
+    padding: 8px 14px;
+    background: #111827;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}

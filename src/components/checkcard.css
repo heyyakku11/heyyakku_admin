@@ -1,0 +1,170 @@
+.check-card {
+    flex: 0 0 250px;
+    width: 250px;
+    box-sizing: border-box;
+    padding: 13px 12px 13px 13px;
+    border-radius: 20px;
+    box-shadow: 0 8px 18px rgba(33, 25, 29, 0.08);
+    color: #21191d;
+    scroll-snap-align: start;
+}
+
+.check-card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+}
+
+.check-card-eyebrow-col,
+.check-card-sticker-col {
+    flex: 1;
+    min-width: 0;
+}
+
+.check-card-eyebrow-col {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.check-card-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 100%;
+    padding: 4px 8px;
+    border-radius: 10px;
+    background: #000;
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.7px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.check-card-dot {
+    flex: none;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #d02e62;
+}
+
+.check-card-meta {
+    color: rgba(33, 25, 29, 0.55);
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.check-card-sticker-col {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.check-card-sticker {
+    display: inline-block;
+    transform: rotate(-0.08rad);
+    padding: 3px 7px;
+    border: 1px solid #000;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.72);
+    color: #d02e62;
+    font-family: 'Pacifico', cursive;
+    font-size: 12px;
+    line-height: 1.15;
+    text-align: center;
+}
+
+.check-card-title {
+    margin: 11px 0 0;
+    font-size: 24px;
+    line-height: 1.02;
+    font-weight: 800;
+    letter-spacing: -0.8px;
+    overflow-wrap: anywhere;
+}
+
+.check-card-question {
+    margin: 6px 0 0;
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+}
+
+.check-card-options {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 11px;
+}
+
+.check-card-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 10px 5px 6px;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.check-card-option-outlined {
+    background: transparent;
+    border: 1.4px dashed rgba(33, 25, 29, 0.35);
+}
+
+.check-card-letter {
+    flex: none;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(208, 46, 98, 0.14);
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.check-card-letter-outlined {
+    background: transparent;
+    border: 1px dashed rgba(33, 25, 29, 0.35);
+    color: rgba(33, 25, 29, 0.7);
+}
+
+.check-card-option-text {
+    flex: 1;
+    min-width: 0;
+    font-size: 12px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.check-card-pct {
+    flex: none;
+    color: rgba(33, 25, 29, 0.35);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+}
+
+/* Larger variant, used by the create-check preview. */
+.check-card-large {
+    flex-basis: 360px;
+    width: 360px;
+    padding: 20px 18px 20px 20px;
+    border-radius: 28px;
+}
+
+.check-card-large .check-card-top { gap: 8px; }
+.check-card-large .check-card-sticker { font-size: 20px; padding: 5px 10px; border-radius: 14px; }
+.check-card-large .check-card-title { margin-top: 16px; font-size: 34px; }
+.check-card-large .check-card-question { margin-top: 8px; font-size: 20px; }
+.check-card-large .check-card-options { gap: 8px; margin-top: 16px; }
+.check-card-large .check-card-option { gap: 10px; padding: 7px 14px 7px 8px; border-radius: 14px; }
+.check-card-large .check-card-letter { width: 30px; height: 30px; font-size: 13px; }
+.check-card-large .check-card-option-text { font-size: 15px; }
+.check-card-large .check-card-pct { font-size: 13px; }
