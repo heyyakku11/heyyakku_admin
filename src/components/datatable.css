@@ -342,3 +342,13 @@ img.dt-avatar {
     color: #6b7280;
     font-size: 13px;
 }
+
+.dt-pill--draft {
+    color: #6b7280;
+    border-color: #d1d5db;
+}
+
+.dt-pill--closed {
+    color: #b54708;
+    border-color: #f5b800;
+}

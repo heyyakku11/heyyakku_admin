@@ -1,5 +1,6 @@
 import { useMemo, useState, type ReactNode } from 'react';
 import './datatable.css';
+import EmptyState, { type EmptyKind } from './EmptyState';
 
 export interface Column<T> {
     key: string;
@@ -29,6 +30,8 @@ interface DataTableProps<T> {
     onStatusChange?: (status: string) => void;
     /** Shown in place of "No results found." while loading or when loading failed. */
     emptyText?: string;
+    /** Which animation the empty row shows: empty (default), loading or error (text only). */
+    emptyKind?: EmptyKind;
     /** Hides the search box and the Export button (rows are then only filtered by status). */
     simple?: boolean;
     /** Shows the View (eye) button in the Action column. Defaults to true. */
@@ -74,6 +77,7 @@ function DataTable<T>({
     onMenu,
     onStatusChange,
     emptyText = 'No results found.',
+    emptyKind = 'empty',
     simple = false,
     showView = true,
     onRefresh,
@@ -241,7 +245,7 @@ function DataTable<T>({
                         {visible.length === 0 && (
                             <tr>
                                 <td className="dt-empty" colSpan={columns.length + 1}>
-                                    {emptyText}
+                                    <EmptyState kind={emptyKind} message={emptyText} />
                                 </td>
                             </tr>
                         )}

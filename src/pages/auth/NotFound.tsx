@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import './auth.css';
+import EmptyState from '../../components/EmptyState';
 
 interface NotFoundProps {
     /** Primary button target: the dashboard when signed in, sign-in otherwise. */
@@ -13,7 +14,7 @@ function NotFound({ homePath, homeLabel }: NotFoundProps) {
             <div className="auth-brand">
                 Yakku
             </div>
-            <div className="auth-notfound-code" aria-hidden="true">404</div>
+            <EmptyState kind="notFound" />
             <h1>Page not found</h1>
             <p>The page you're looking for doesn't exist or has been moved.</p>
             <Link className="auth-btn" to={homePath}>{homeLabel}</Link>

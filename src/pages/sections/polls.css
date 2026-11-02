@@ -156,3 +156,26 @@
 .view-poll-button:hover {
     text-decoration: underline;
 }
+.poll-expiry {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+}
+
+.poll-expiry-tag {
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.poll-expiry-tag.live {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.poll-expiry-expired {
+    color: #b91c1c;
+    font-weight: 600;
+}

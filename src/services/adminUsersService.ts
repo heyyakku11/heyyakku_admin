@@ -1,6 +1,7 @@
 import api from "./api";
 import type { ApiResponse } from "../types/apiResponse";
 import type { Guest } from "../types/guest";
+import type { Poll } from "../types/poll";
 import type { User } from "../types/user";
 
 export const PAGE_SIZE = 10;
@@ -32,4 +33,8 @@ export function fetchUsers(status: string | null, page: number): Promise<Page<Us
 
 export function fetchGuests(status: string | null, page: number): Promise<Page<Guest>> {
     return fetchPage<Guest>("/api/v1/yakku/guests", status, page);
+}
+
+export function fetchPolls(status: string | null, page: number): Promise<Page<Poll>> {
+    return fetchPage<Poll>("/api/v1/yakku/polls", status, page);
 }

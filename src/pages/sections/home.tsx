@@ -2,6 +2,7 @@ import './home.css';
 import { useEffect, useMemo, useState } from 'react';
 import api from '../../services/api';
 import CheckCard from '../../components/CheckCard';
+import EmptyState from '../../components/EmptyState';
 import CreateCheck from './CreateCheck';
 import type { ApiResponse } from '../../types/apiResponse';
 import type { Check } from '../../types/check';
@@ -118,7 +119,7 @@ function Home() {
                 </button>
             </div>
 
-            {loading && <p className="home-note">Loading checks…</p>}
+            {loading && <EmptyState kind="loading" message="Loading checks…" />}
 
             {error && (
                 <p className="home-note home-error">
@@ -127,7 +128,7 @@ function Home() {
             )}
 
             {!loading && !error && checks.length === 0 && (
-                <p className="home-note">No checks are scheduled for {isCurrentWeek ? 'this week' : 'the selected week'}.</p>
+                <EmptyState message={`No checks are scheduled for ${isCurrentWeek ? 'this week' : 'the selected week'}.`} />
             )}
 
             {!loading && !error && checks.length > 0 && (
