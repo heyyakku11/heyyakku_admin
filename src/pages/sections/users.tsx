@@ -143,83 +143,69 @@ interface Loaded<T> {
     rows: T[];
     loading: boolean;
     error: string | null;
-    hasMore: boolean;
-    loadingMore: boolean;
+    page: number;
+    totalPages: number;
+    totalCount: number;
 }
 
 interface Result<T> {
-    /** Identifies the status + reload the rows belong to, so stale responses are ignored. */
+    /** Identifies the status, page and reload the rows belong to, so stale responses are ignored. */
     key: string;
     rows: T[];
-    nextCursor: string | null;
-    hasMore: boolean;
+    totalPages: number;
+    totalCount: number;
     error: string | null;
 }
 
-/** Loads a list 10 rows at a time, restarting whenever `status` changes or it is reloaded; null status = every status. */
+/** Loads a list 10 rows per page; going to another page or status refetches, reload refetches the same page. */
 function useList<T>(
-    load: (status: string | null, cursor: string | null) => Promise<Page<T>>,
+    load: (status: string | null, page: number) => Promise<Page<T>>,
     status: string | null,
-): Loaded<T> & { reload: () => void; loadMore: () => void } {
+): Loaded<T> & { reload: () => void; goToPage: (page: number) => void } {
+    const [page, setPage] = useState(1);
     const [result, setResult] = useState<Result<T> | null>(null);
-    const [loadingMore, setLoadingMore] = useState(false);
     const [reloadKey, setReloadKey] = useState(0);
-    const key = `${status ?? 'all'}:${reloadKey}`;
-
-    const reload = useCallback(() => {
-        setResult(null);
-        setLoadingMore(false);
-        setReloadKey((k) => k + 1);
-    }, []);
+    const key = `${status ?? 'all'}:${page}:${reloadKey}`;
 
     useEffect(() => {
         let cancelled = false;
 
-        load(status, null)
-            .then((page) => {
+        load(status, page)
+            .then((data) => {
                 if (!cancelled) {
-                    setResult({ key, rows: page.items, nextCursor: page.nextCursor, hasMore: page.hasMore, error: null });
+                    setResult({ key, rows: data.items, totalPages: data.totalPages, totalCount: data.totalCount, error: null });
                 }
             })
             .catch((e) => {
                 if (!cancelled) {
-                    setResult({ key, rows: [], nextCursor: null, hasMore: false, error: getErrorMessage(e) });
+                    setResult({ key, rows: [], totalPages: 1, totalCount: 0, error: getErrorMessage(e) });
                 }
             });
 
         return () => {
             cancelled = true;
         };
-    }, [load, status, key]);
+    }, [load, status, page, key]);
 
-    // Still loading until a result for the current status has arrived.
-    const current = result !== null && result.key === key ? result : null;
+    const reload = useCallback(() => setReloadKey((k) => k + 1), []);
 
-    const loadMore = useCallback(() => {
-        if (!current || !current.hasMore || loadingMore) return;
-        setLoadingMore(true);
-        load(status, current.nextCursor)
-            .then((page) => {
-                setResult((prev) =>
-                    prev && prev.key === key
-                        ? { ...prev, rows: [...prev.rows, ...page.items], nextCursor: page.nextCursor, hasMore: page.hasMore }
-                        : prev,
-                );
-            })
-            .catch(() => {
-                // Leave the rows and the button in place so it can be tried again.
-            })
-            .finally(() => setLoadingMore(false));
-    }, [current, loadingMore, load, status, key]);
+    // A different status starts again from page 1.
+    const [lastStatus, setLastStatus] = useState(status);
+    if (lastStatus !== status) {
+        setLastStatus(status);
+        setPage(1);
+    }
 
+    // The previous rows stay on screen while the next page loads.
     return {
-        rows: current?.rows ?? [],
-        loading: current === null,
-        error: current?.error ?? null,
-        hasMore: current?.hasMore ?? false,
-        loadingMore,
+        rows: result?.rows ?? [],
+        loading: result === null || result.key !== key,
+        error: result?.key === key ? result.error : null,
+        page,
+        totalPages: result?.totalPages ?? 1,
+        totalCount: result?.totalCount ?? 0,
         reload,
-        loadMore,
+        goToPage: setPage,
     };
 }
 
@@ -245,9 +231,10 @@ function Users() {
                 simple
                 onRefresh={users.reload}
                 refreshing={users.loading}
-                hasMore={users.hasMore}
-                loadingMore={users.loadingMore}
-                onLoadMore={users.loadMore}
+                page={users.page}
+                totalPages={users.totalPages}
+                totalCount={users.totalCount}
+                onPageChange={users.goToPage}
                 statusOf={(u) => u.status}
                 statusOptions={['active', 'disabled']}
                 onStatusChange={(s) => setUserStatus(s === 'all' ? null : s)}
@@ -274,9 +261,10 @@ function Users() {
                 showView={false}
                 onRefresh={guests.reload}
                 refreshing={guests.loading}
-                hasMore={guests.hasMore}
-                loadingMore={guests.loadingMore}
-                onLoadMore={guests.loadMore}
+                page={guests.page}
+                totalPages={guests.totalPages}
+                totalCount={guests.totalCount}
+                onPageChange={guests.goToPage}
                 statusOf={(g) => g.status}
                 statusOptions={['active', 'expired']}
                 onStatusChange={(s) => setGuestStatus(s === 'all' ? null : s)}

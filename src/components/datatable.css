@@ -330,8 +330,16 @@ img.dt-avatar {
     }
 }
 
-.dt-more {
+.dt-pager {
     display: flex;
-    justify-content: center;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
     padding: 12px;
+}
+
+.dt-pager-info {
+    margin-right: auto;
+    color: #6b7280;
+    font-size: 13px;
 }

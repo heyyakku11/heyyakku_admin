@@ -7,32 +7,29 @@ export const PAGE_SIZE = 10;
 
 export interface Page<T> {
     items: T[];
-    /** Pass to the next call to get the following page; null when there is none. */
-    nextCursor: string | null;
-    hasMore: boolean;
+    page: number;
+    totalPages: number;
+    totalCount: number;
 }
 
-/** One cursor page of a list endpoint; status is optional and omitted means every status. */
-async function fetchPage<T>(path: string, status: string | null, cursor: string | null): Promise<Page<T>> {
+/** One page of a list endpoint (1-based); status is optional and omitted means every status. */
+async function fetchPage<T>(path: string, status: string | null, page: number): Promise<Page<T>> {
     const response = await api.get<ApiResponse<T[]>>(path, {
-        params: {
-            pageSize: PAGE_SIZE,
-            ...(status ? { status } : {}),
-            ...(cursor ? { cursor } : {}),
-        },
+        params: { page, pageSize: PAGE_SIZE, ...(status ? { status } : {}) },
     });
     const meta = response.data.meta;
     return {
         items: response.data.data ?? [],
-        nextCursor: meta?.nextCursor ?? null,
-        hasMore: meta?.hasMore ?? false,
+        page: meta?.page ?? page,
+        totalPages: meta?.totalPages ?? 1,
+        totalCount: meta?.totalCount ?? response.data.data?.length ?? 0,
     };
 }
 
-export function fetchUsers(status: string | null, cursor: string | null = null): Promise<Page<User>> {
-    return fetchPage<User>("/api/v1/yakku/users", status, cursor);
+export function fetchUsers(status: string | null, page: number): Promise<Page<User>> {
+    return fetchPage<User>("/api/v1/yakku/users", status, page);
 }
 
-export function fetchGuests(status: string | null, cursor: string | null = null): Promise<Page<Guest>> {
-    return fetchPage<Guest>("/api/v1/yakku/guests", status, cursor);
+export function fetchGuests(status: string | null, page: number): Promise<Page<Guest>> {
+    return fetchPage<Guest>("/api/v1/yakku/guests", status, page);
 }

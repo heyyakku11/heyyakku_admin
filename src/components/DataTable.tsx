@@ -36,10 +36,11 @@ interface DataTableProps<T> {
     /** Adds a refresh icon button that calls this; the icon spins while `refreshing`. */
     onRefresh?: () => void;
     refreshing?: boolean;
-    /** Cursor paging: when hasMore, a Load more button under the table calls onLoadMore. */
-    hasMore?: boolean;
-    loadingMore?: boolean;
-    onLoadMore?: () => void;
+    /** Server paging: with onPageChange, Previous / Next controls under the table move between pages (1-based). */
+    page?: number;
+    totalPages?: number;
+    totalCount?: number;
+    onPageChange?: (page: number) => void;
 }
 
 export function StatusPill({ status }: { status: string }) {
@@ -77,9 +78,10 @@ function DataTable<T>({
     showView = true,
     onRefresh,
     refreshing = false,
-    hasMore = false,
-    loadingMore = false,
-    onLoadMore,
+    page = 1,
+    totalPages = 1,
+    totalCount = 0,
+    onPageChange,
 }: DataTableProps<T>) {
     const [query, setQuery] = useState('');
     const [status, setStatus] = useState('all');
@@ -247,10 +249,16 @@ function DataTable<T>({
                 </table>
             </div>
 
-            {hasMore && onLoadMore && (
-                <div className="dt-more">
-                    <button type="button" className="dt-btn" onClick={onLoadMore} disabled={loadingMore}>
-                        {loadingMore ? 'Loading…' : 'Load more'}
+            {onPageChange && totalPages > 0 && (
+                <div className="dt-pager">
+                    <span className="dt-pager-info">
+                        Page {page} of {Math.max(totalPages, 1)} · {totalCount} total
+                    </span>
+                    <button type="button" className="dt-btn" onClick={() => onPageChange(page - 1)} disabled={page <= 1}>
+                        Previous
+                    </button>
+                    <button type="button" className="dt-btn" onClick={() => onPageChange(page + 1)} disabled={page >= totalPages}>
+                        Next
                     </button>
                 </div>
             )}

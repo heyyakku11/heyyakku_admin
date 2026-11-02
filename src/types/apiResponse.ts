@@ -17,9 +17,6 @@ export interface PaginationMeta {
     pageSize: number;
     totalCount: number;
     totalPages: number;
-    /** Cursor-paginated endpoints: pass as `cursor` to get the next page. */
-    nextCursor?: string | null;
-    hasMore?: boolean;
 }
 
 
