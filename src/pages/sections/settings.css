@@ -1,0 +1,19 @@
+.settings-logout {
+    max-width: 280px;
+    margin: 24px auto 0;
+}
+
+.settings-logout .logout-button {
+    justify-content: center;
+    border: 1px solid #fca5a5;
+    color: #b91c1c;
+}
+
+.settings-logout .logout-button:hover {
+    background-color: #fef2f2;
+}
+
+.settings-logout .logout-button:disabled {
+    opacity: 0.6;
+    cursor: default;
+}

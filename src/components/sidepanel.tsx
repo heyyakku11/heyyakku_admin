@@ -4,16 +4,10 @@ import {
     faGauge,
     faPerson,
     faPoll,
-    faGear,
-    faRightFromBracket
+    faGear
 } from "@fortawesome/free-solid-svg-icons";
-import { useState } from 'react';
-import { adminLogout } from '../services/authService';
-import type { RefreshRequest } from '../types/auth';
-import { clearSession } from '../utils/session';
 
 interface SidePanelProps {
-    setLogin: React.Dispatch<React.SetStateAction<boolean>>;
     activeSection: string;
     setActiveSection: (section: string) => void;
 }
@@ -36,45 +30,7 @@ const menuItems = [
     }
 ];
 
-function SidePanel({setLogin, activeSection, setActiveSection}:SidePanelProps) {
-   const[isLoading,setLoading] = useState(false);
-    
-   async function _logout() {
-    if (!confirm("Are you sure you want to logout?")) {
-        return;
-    }
-
-    try {
-        setLoading(true);
-
-        const refreshToken = localStorage.getItem("refreshToken");
-
-        if (refreshToken) {
-            const request: RefreshRequest = {
-                refreshToken
-            };
-
-            try {
-                const response = await adminLogout(request);
-
-                if (!response.success) {
-                    console.warn("Server logout failed:", response.message);
-                }
-
-            } catch (ex) {
-                console.warn("Server logout request failed:", ex);
-            }
-        }
-
-    } finally {
-        // Always clear client authentication state
-        clearSession();
-
-        setLogin(false);
-        setLoading(false);
-    }
-}
-
+function SidePanel({activeSection, setActiveSection}:SidePanelProps) {
     return (
         <aside className="sidepanel">
 
@@ -101,12 +57,6 @@ function SidePanel({setLogin, activeSection, setActiveSection}:SidePanelProps) {
                 >
                     <FontAwesomeIcon icon={faGear} />
                     <span>Settings</span>
-                </button>
-
-                <button className="logout-button" onClick={_logout}>
-                    <FontAwesomeIcon icon={faRightFromBracket} />
-                    {isLoading?"Logging  out ...":
-                    "Log out"}
                 </button>
             </div>
 

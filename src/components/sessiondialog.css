@@ -1,0 +1,43 @@
+.session-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    background: rgba(17, 24, 39, 0.55);
+}
+
+.session-dialog {
+    width: 100%;
+    max-width: 400px;
+    box-sizing: border-box;
+    padding: 24px;
+    border-radius: 14px;
+    background: #fff;
+}
+
+.session-dialog h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    color: #111827;
+}
+
+.session-dialog p {
+    margin: 0 0 20px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #4b5563;
+}
+
+.session-dialog button {
+    width: 100%;
+    padding: 10px 0;
+    border: 0;
+    border-radius: 8px;
+    background: #111827;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+}

@@ -19,7 +19,7 @@ function Dashboard({setLogin}:DashboardProps){
     return (
         <main className="dashboard">
             {/*sidebar */}
-            <SidePanel setLogin={setLogin} activeSection={activeSection} setActiveSection={setActiveSection}/>
+            <SidePanel activeSection={activeSection} setActiveSection={setActiveSection}/>
 
             {/*main area */}
             <div className="mainDiv">
