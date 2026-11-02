@@ -329,3 +329,9 @@ img.dt-avatar {
         transform: rotate(360deg);
     }
 }
+
+.dt-more {
+    display: flex;
+    justify-content: center;
+    padding: 12px;
+}

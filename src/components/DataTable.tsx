@@ -36,6 +36,10 @@ interface DataTableProps<T> {
     /** Adds a refresh icon button that calls this; the icon spins while `refreshing`. */
     onRefresh?: () => void;
     refreshing?: boolean;
+    /** Cursor paging: when hasMore, a Load more button under the table calls onLoadMore. */
+    hasMore?: boolean;
+    loadingMore?: boolean;
+    onLoadMore?: () => void;
 }
 
 export function StatusPill({ status }: { status: string }) {
@@ -73,6 +77,9 @@ function DataTable<T>({
     showView = true,
     onRefresh,
     refreshing = false,
+    hasMore = false,
+    loadingMore = false,
+    onLoadMore,
 }: DataTableProps<T>) {
     const [query, setQuery] = useState('');
     const [status, setStatus] = useState('all');
@@ -239,6 +246,14 @@ function DataTable<T>({
                     </tbody>
                 </table>
             </div>
+
+            {hasMore && onLoadMore && (
+                <div className="dt-more">
+                    <button type="button" className="dt-btn" onClick={onLoadMore} disabled={loadingMore}>
+                        {loadingMore ? 'Loading…' : 'Load more'}
+                    </button>
+                </div>
+            )}
         </div>
     );
 }
