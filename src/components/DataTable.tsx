@@ -22,6 +22,20 @@ interface DataTableProps<T> {
     exportRow: (row: T) => Record<string, string | number>;
     onView?: (row: T) => void;
     onMenu?: (row: T) => void;
+    /**
+     * When set, the status filter is applied by the caller (e.g. by asking the API for just that status)
+     * instead of filtering the loaded rows here. Receives "all" or one of statusOptions.
+     */
+    onStatusChange?: (status: string) => void;
+    /** Shown in place of "No results found." while loading or when loading failed. */
+    emptyText?: string;
+    /** Hides the search box and the Export button (rows are then only filtered by status). */
+    simple?: boolean;
+    /** Shows the View (eye) button in the Action column. Defaults to true. */
+    showView?: boolean;
+    /** Adds a refresh icon button that calls this; the icon spins while `refreshing`. */
+    onRefresh?: () => void;
+    refreshing?: boolean;
 }
 
 export function StatusPill({ status }: { status: string }) {
@@ -53,6 +67,12 @@ function DataTable<T>({
     exportRow,
     onView,
     onMenu,
+    onStatusChange,
+    emptyText = 'No results found.',
+    simple = false,
+    showView = true,
+    onRefresh,
+    refreshing = false,
 }: DataTableProps<T>) {
     const [query, setQuery] = useState('');
     const [status, setStatus] = useState('all');
@@ -62,7 +82,7 @@ function DataTable<T>({
         const q = query.trim().toLowerCase();
         let result = rows.filter(
             (row) =>
-                (status === 'all' || statusOf(row) === status) &&
+                (onStatusChange !== undefined || status === 'all' || statusOf(row) === status) &&
                 (q === '' || searchText(row).toLowerCase().includes(q)),
         );
         const col = sort && columns.find((c) => c.key === sort.key);
@@ -76,7 +96,7 @@ function DataTable<T>({
             });
         }
         return result;
-    }, [rows, query, status, sort, columns, statusOf, searchText]);
+    }, [rows, query, status, sort, columns, statusOf, searchText, onStatusChange]);
 
     function toggleSort(col: Column<T>) {
         if (!col.sortValue) return;
@@ -101,6 +121,23 @@ function DataTable<T>({
                 <h3 className="dt-title">{title}</h3>
 
                 <div className="dt-controls">
+                    {onRefresh && (
+                        <button
+                            type="button"
+                            className={`dt-refresh${refreshing ? ' spinning' : ''}`}
+                            aria-label={`Refresh ${title}`}
+                            title="Refresh"
+                            onClick={onRefresh}
+                            disabled={refreshing}
+                        >
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                                <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+                                <path d="M21 3v6h-6" />
+                            </svg>
+                        </button>
+                    )}
+
+                    {!simple && (
                     <label className="dt-search">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
@@ -114,11 +151,15 @@ function DataTable<T>({
                             aria-label={searchPlaceholder}
                         />
                     </label>
+                    )}
 
                     <select
                         className="dt-select"
                         value={status}
-                        onChange={(e) => setStatus(e.target.value)}
+                        onChange={(e) => {
+                            setStatus(e.target.value);
+                            onStatusChange?.(e.target.value);
+                        }}
                         aria-label="Filter by status"
                     >
                         <option value="all">All Status</option>
@@ -129,12 +170,14 @@ function DataTable<T>({
                         ))}
                     </select>
 
+                    {!simple && (
                     <button type="button" className="dt-btn" onClick={exportCsv} disabled={visible.length === 0}>
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                         Export
                     </button>
+                    )}
                 </div>
             </div>
 
@@ -147,9 +190,6 @@ function DataTable<T>({
                                     {col.sortValue ? (
                                         <button type="button" className="dt-sort" onClick={() => toggleSort(col)}>
                                             {col.label}
-                                            <span className={`dt-sort-icon ${sort?.key === col.key ? 'on' : ''}`} aria-hidden="true">
-                                                {sort?.key === col.key ? (sort.dir === 'asc' ? '↑' : '↓') : '↕'}
-                                            </span>
                                         </button>
                                     ) : (
                                         col.label
@@ -169,12 +209,14 @@ function DataTable<T>({
                                     ))}
                                     <td>
                                         <div className="dt-actions">
+                                            {showView && (
                                             <button type="button" className="dt-icon-btn" aria-label="View" onClick={() => onView?.(row)}>
                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                                     <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
                                                     <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.8" />
                                                 </svg>
                                             </button>
+                                            )}
                                             <button type="button" className="dt-icon-btn" aria-label="More actions" onClick={() => onMenu?.(row)}>
                                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                                                     <circle cx="12" cy="5" r="1.8" />
@@ -190,7 +232,7 @@ function DataTable<T>({
                         {visible.length === 0 && (
                             <tr>
                                 <td className="dt-empty" colSpan={columns.length + 1}>
-                                    No results found.
+                                    {emptyText}
                                 </td>
                             </tr>
                         )}

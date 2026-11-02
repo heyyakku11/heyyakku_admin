@@ -1,5 +1,5 @@
 .sidepanel {
-    width: 240px;
+    width: 216px;
     height: 100vh;
 
     display: flex;
@@ -85,9 +85,15 @@
 
 /* Logout */
 
-.logout-button {
+.sidepanel-footer {
     margin-top: auto;
 
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.logout-button {
     display: flex;
     align-items: center;
 

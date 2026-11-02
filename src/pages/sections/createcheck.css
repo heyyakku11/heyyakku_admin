@@ -156,6 +156,7 @@
 
 .create-check-preview {
     flex: none;
+    width: clamp(208px, 20.8vw, 304px);
     position: sticky;
     top: 0;
 }
@@ -339,7 +340,6 @@
 }
 
 .confirm-card {
-    display: flex;
-    justify-content: center;
-    margin: 0 0 16px;
+    width: min(100%, 224px);
+    margin: 0 auto 16px;
 }

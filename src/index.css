@@ -109,3 +109,13 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 } */
+
+/* Admin UI font: Aptos where installed, otherwise Arial. Pacifico is reserved for the Yakku logo. */
+html,
+body,
+button,
+input,
+select,
+textarea {
+  font-family: Aptos, Arial, sans-serif;
+}

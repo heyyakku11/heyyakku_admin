@@ -1,15 +1,13 @@
+/** A user as returned by GET /api/v1/yakku/users. */
 export interface User {
     id: string;
-    email: string;
-    /** Full phone number including the country dial code, e.g. "+91 98765 43210". */
-    phone: string;
-    displayName: string;
-    /** ISO 3166-1 alpha-2 country code, e.g. "IN". */
-    countryCode: string;
+    anonymousName: string;
+    /** Full phone number with its country code, e.g. "+919876543210". */
+    phoneNumber: string;
+    plan: { code: string; name: string };
+    /** active | disabled */
     status: string;
-    lastLoginAt: string;
+    avatarUrl: string | null;
+    lastLoginAt: string | null;
     createdAt: string;
-    /** Active subscription plan, null when the user has none. */
-    planName: string | null;
-    planExpiresAt: string | null;
 }

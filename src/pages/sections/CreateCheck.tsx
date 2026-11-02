@@ -31,7 +31,11 @@ const WEEKS_AHEAD = 12;
 function ColorSelect({ value, onChange }: { value: string; onChange: (hex: string) => void }) {
     const [open, setOpen] = useState(false);
     const rootRef = useRef<HTMLDivElement>(null);
-    const selected = PALETTE.find((p) => p.hex === value) ?? PALETTE[0];
+    // An existing check may use a color outside the palette; keep it selectable.
+    const colors = PALETTE.some((p) => p.hex.toUpperCase() === value.toUpperCase())
+        ? PALETTE
+        : [{ name: 'Custom', hex: value }, ...PALETTE];
+    const selected = colors.find((p) => p.hex.toUpperCase() === value.toUpperCase()) ?? colors[0];
 
     useEffect(() => {
         if (!open) return;
@@ -58,12 +62,12 @@ function ColorSelect({ value, onChange }: { value: string; onChange: (hex: strin
             </button>
             {open && (
                 <ul className="color-select-menu" role="listbox">
-                    {PALETTE.map((p) => (
+                    {colors.map((p) => (
                         <li
                             key={p.name}
                             role="option"
-                            aria-selected={p.hex === value}
-                            className={p.hex === value ? 'selected' : undefined}
+                            aria-selected={p.hex === selected.hex}
+                            className={p.hex === selected.hex ? 'selected' : undefined}
                             onClick={() => {
                                 onChange(p.hex);
                                 setOpen(false);
@@ -80,18 +84,34 @@ function ColorSelect({ value, onChange }: { value: string; onChange: (hex: strin
 }
 
 interface CreateCheckProps {
+    /** The check being edited; omit to create a new one. */
+    check?: Check;
     onBack: () => void;
-    onCreated: () => void;
+    onSaved: () => void;
 }
 
-function CreateCheck({ onBack, onCreated }: CreateCheckProps) {
-    const [title, setTitle] = useState('');
-    const [question, setQuestion] = useState('');
-    const [sticker, setSticker] = useState('');
-    const [color, setColor] = useState(DEFAULT_COLOR);
-    const [options, setOptions] = useState<string[]>(['', '']);
-    const mondays = useMemo(() => mondayOptions(0, WEEKS_AHEAD), []);
-    const [weekStart, setWeekStart] = useState(mondays[0].value);
+function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
+    const editing = check !== undefined;
+    const [title, setTitle] = useState(check?.title ?? '');
+    const [question, setQuestion] = useState(check?.question ?? '');
+    const [sticker, setSticker] = useState(check?.sticker ?? '');
+    const [color, setColor] = useState(check?.backgroundColor ?? DEFAULT_COLOR);
+    const [options, setOptions] = useState<string[]>(check ? check.options.map((o) => o.text) : ['', '']);
+    const [isActive, setIsActive] = useState(check?.isActive ?? true);
+    const mondays = useMemo(() => {
+        const upcoming = mondayOptions(0, WEEKS_AHEAD);
+        // An existing check may sit in a past week; keep that week selectable.
+        if (check && !upcoming.some((m) => m.value === check.weekStart)) {
+            const label = new Date(`${check.weekStart}T00:00:00`).toLocaleDateString('en-IN', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+            });
+            return [{ value: check.weekStart, label, isCurrent: false }, ...upcoming];
+        }
+        return upcoming;
+    }, [check]);
+    const [weekStart, setWeekStart] = useState(check?.weekStart ?? mondays[0].value);
     const [submitting, setSubmitting] = useState(false);
     const [confirming, setConfirming] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -107,7 +127,7 @@ function CreateCheck({ onBack, onCreated }: CreateCheckProps) {
         question: question.trim() || 'Your question will appear here',
         backgroundColor: color,
         sticker: sticker.trim() || 'Sticker',
-        isActive: true,
+        isActive,
         status: 'upcoming',
         options: options.map((text, i) => ({
             id: String(i),
@@ -153,16 +173,21 @@ function CreateCheck({ onBack, onCreated }: CreateCheckProps) {
         setSubmitting(true);
         setError(null);
         try {
-            await api.post('/api/v1/yakku/checks', {
+            const body = {
                 weekStart,
                 title: title.trim(),
                 question: question.trim(),
                 backgroundColor: color,
                 sticker: sticker.trim(),
                 options: trimmedOptions,
-                isActive: true,
-            });
-            onCreated();
+                isActive,
+            };
+            if (check) {
+                await api.put(`/api/v1/yakku/checks/${check.id}`, body);
+            } else {
+                await api.post('/api/v1/yakku/checks', body);
+            }
+            onSaved();
         } catch (err) {
             setConfirming(false);
             setError(getErrorMessage(err));
@@ -176,7 +201,7 @@ function CreateCheck({ onBack, onCreated }: CreateCheckProps) {
                 <button type="button" className="create-check-back" onClick={onBack} disabled={submitting}>
                     ← Back
                 </button>
-                <h2>Create check</h2>
+                <h2>{editing ? 'Edit check' : 'Create check'}</h2>
             </div>
 
             <div className="create-check-body">
@@ -244,28 +269,33 @@ function CreateCheck({ onBack, onCreated }: CreateCheckProps) {
                         )}
                     </fieldset>
 
+                    <label className="create-check-toggle">
+                        <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
+                        Active (users can see it once its week starts)
+                    </label>
+
                     {error && <p className="create-check-error" role="alert">{error}</p>}
 
                     <div className="create-check-actions">
                         <button type="button" onClick={onBack} disabled={submitting}>Cancel</button>
                         <button type="submit" className="create-check-submit" disabled={submitting}>
-                            Create check
+                            {editing ? 'Save changes' : 'Create check'}
                         </button>
                     </div>
                 </form>
 
                 <aside className="create-check-preview">
                     <p>Preview</p>
-                    <CheckCard check={preview} large />
+                    <CheckCard check={preview} />
                 </aside>
             </div>
 
             {confirming && (
                 <div className="confirm-backdrop" role="presentation">
                     <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
-                        <h3 id="confirm-title">Confirm this check</h3>
+                        <h3 id="confirm-title">{editing ? 'Confirm changes' : 'Confirm this check'}</h3>
                         <p className="confirm-week">
-                            This check will go live in the week starting <strong>{weekLabel}</strong> and cannot be reworded once anyone uses it.
+                            This check will go live in the week starting <strong>{weekLabel}</strong> and will be {isActive ? 'active' : 'inactive'}. It cannot be reworded once anyone uses it.
                         </p>
                         <div className="confirm-card">
                             <CheckCard check={preview} />
@@ -275,7 +305,7 @@ function CreateCheck({ onBack, onCreated }: CreateCheckProps) {
                                 Edit
                             </button>
                             <button type="button" className="create-check-submit" onClick={submit} disabled={submitting}>
-                                {submitting ? 'Creating…' : 'Confirm & create'}
+                                {submitting ? 'Saving…' : editing ? 'Confirm & save' : 'Confirm & create'}
                             </button>
                         </div>
                     </div>

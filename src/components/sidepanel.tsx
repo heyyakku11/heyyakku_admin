@@ -33,11 +33,6 @@ const menuItems = [
         id: "polls",
         label: "Polls",
         icon: faPoll
-    },
-    {
-        id: "settings",
-        label: "Settings",
-        icon: faGear
     }
 ];
 
@@ -99,11 +94,21 @@ function SidePanel({setLogin, activeSection, setActiveSection}:SidePanelProps) {
     ))}
 
 
-            <button className="logout-button" onClick={_logout}>
-                <FontAwesomeIcon icon={faRightFromBracket} />
-                {isLoading?"Logging  out ...":
-                "Log out"}
-            </button>
+            <div className="sidepanel-footer">
+                <button
+                    className={`nav-item ${activeSection === "settings" ? "active" : ""}`}
+                    onClick={() => setActiveSection("settings")}
+                >
+                    <FontAwesomeIcon icon={faGear} />
+                    <span>Settings</span>
+                </button>
+
+                <button className="logout-button" onClick={_logout}>
+                    <FontAwesomeIcon icon={faRightFromBracket} />
+                    {isLoading?"Logging  out ...":
+                    "Log out"}
+                </button>
+            </div>
 
         </aside>
     );

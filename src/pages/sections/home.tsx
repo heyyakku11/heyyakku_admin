@@ -8,15 +8,19 @@ import type { Check } from '../../types/check';
 import { getErrorMessage } from '../../utils/apiError';
 import { mondayOptions } from '../../utils/weeks';
 
-const WEEKS_BACK = 12;
-const WEEKS_AHEAD = 12;
+const WEEKS_BACK = 5;
+const WEEKS_AHEAD = 5;
 
 function Home() {
     const [checks, setChecks] = useState<Check[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [reloadKey, setReloadKey] = useState(0);
-    const [creating, setCreating] = useState(false);
+    // null = the list, 'new' = the create form, a check = the edit form for it.
+    const [form, setForm] = useState<Check | 'new' | null>(null);
+    const [deleting, setDeleting] = useState<Check | null>(null);
+    const [deleteError, setDeleteError] = useState<string | null>(null);
+    const [deleteBusy, setDeleteBusy] = useState(false);
     const weeks = useMemo(() => mondayOptions(WEEKS_BACK, WEEKS_AHEAD), []);
     const [week, setWeek] = useState(() => weeks.find((w) => w.isCurrent)!.value);
     const isCurrentWeek = weeks.find((w) => w.value === week)?.isCurrent ?? false;
@@ -48,13 +52,29 @@ function Home() {
         setReloadKey((k) => k + 1);
     }
 
-    // A one-deep navigation stack: the checks list, with the create form pushed on top.
-    if (creating) {
+    async function confirmDelete() {
+        if (!deleting || deleteBusy) return;
+        setDeleteBusy(true);
+        setDeleteError(null);
+        try {
+            await api.delete(`/api/v1/yakku/checks/${deleting.id}`);
+            setDeleting(null);
+            retry();
+        } catch (e) {
+            setDeleteError(getErrorMessage(e));
+        } finally {
+            setDeleteBusy(false);
+        }
+    }
+
+    // A one-deep navigation stack: the checks list, with the form pushed on top.
+    if (form !== null) {
         return (
             <CreateCheck
-                onBack={() => setCreating(false)}
-                onCreated={() => {
-                    setCreating(false);
+                check={form === 'new' ? undefined : form}
+                onBack={() => setForm(null)}
+                onSaved={() => {
+                    setForm(null);
                     retry();
                 }}
             />
@@ -66,6 +86,19 @@ function Home() {
             <div className="home-heading">
                 <h2>{isCurrentWeek ? 'This week\'s checks' : 'Checks'}</h2>
                 {!loading && !error && <span className="home-count">{checks.length}</span>}
+                <button
+                    type="button"
+                    className={`home-refresh${loading ? ' spinning' : ''}`}
+                    aria-label="Refresh checks"
+                    title="Refresh"
+                    onClick={retry}
+                    disabled={loading}
+                >
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                        <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+                        <path d="M21 3v6h-6" />
+                    </svg>
+                </button>
                 <select
                     className="home-week"
                     aria-label="Live week"
@@ -80,7 +113,7 @@ function Home() {
                         <option key={w.value} value={w.value}>Live week: {w.label}</option>
                     ))}
                 </select>
-                <button type="button" className="home-add" onClick={() => setCreating(true)}>
+                <button type="button" className="home-add" onClick={() => setForm('new')}>
                     + Add check
                 </button>
             </div>
@@ -100,8 +133,49 @@ function Home() {
             {!loading && !error && checks.length > 0 && (
                 <div className="home-checks-row">
                     {checks.map((check) => (
-                        <CheckCard key={check.id} check={check} />
+                        <div className="home-check" key={check.id}>
+                            <CheckCard
+                                check={check}
+                                showStatus
+                                footer={
+                                    <>
+                                        <button type="button" onClick={() => setForm(check)}>Edit</button>
+                                        <button
+                                            type="button"
+                                            className="danger"
+                                            onClick={() => {
+                                                setDeleteError(null);
+                                                setDeleting(check);
+                                            }}
+                                        >
+                                            Delete
+                                        </button>
+                                    </>
+                                }
+                            />
+                        </div>
                     ))}
+                </div>
+            )}
+
+            {deleting && (
+                <div className="confirm-backdrop" role="presentation">
+                    <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-title">
+                        <h3 id="delete-title">Delete this check?</h3>
+                        <p className="confirm-week">
+                            "{deleting.title}" will be removed permanently. A check that users have already
+                            answered cannot be deleted; make it inactive instead.
+                        </p>
+                        {deleteError && <p className="create-check-error" role="alert">{deleteError}</p>}
+                        <div className="create-check-actions">
+                            <button type="button" onClick={() => setDeleting(null)} disabled={deleteBusy}>
+                                Cancel
+                            </button>
+                            <button type="button" className="create-check-submit" onClick={confirmDelete} disabled={deleteBusy}>
+                                {deleteBusy ? 'Deleting…' : 'Delete'}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
