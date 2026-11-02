@@ -21,7 +21,7 @@ async function fetchPage<T>(path: string, status: string | null, page: number): 
     return {
         items: response.data.data ?? [],
         page: meta?.page ?? page,
-        totalPages: meta?.totalPages ?? 1,
+        totalPages: Math.max(meta?.totalPages ?? 1, 1),
         totalCount: meta?.totalCount ?? response.data.data?.length ?? 0,
     };
 }

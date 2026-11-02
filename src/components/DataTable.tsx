@@ -249,14 +249,14 @@ function DataTable<T>({
                 </table>
             </div>
 
-            {onPageChange && totalPages > 0 && (
+            {onPageChange && (
                 <div className="dt-pager">
-                    <span className="dt-pager-info">
-                        Page {page} of {Math.max(totalPages, 1)} · {totalCount} total
-                    </span>
                     <button type="button" className="dt-btn" onClick={() => onPageChange(page - 1)} disabled={page <= 1}>
                         Previous
                     </button>
+                    <span className="dt-pager-info">
+                        Page {page} of {Math.max(totalPages, 1)} · {totalCount} total
+                    </span>
                     <button type="button" className="dt-btn" onClick={() => onPageChange(page + 1)} disabled={page >= totalPages}>
                         Next
                     </button>

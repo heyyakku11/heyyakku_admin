@@ -333,13 +333,12 @@ img.dt-avatar {
 .dt-pager {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 10px;
+    justify-content: center;
+    gap: 14px;
     padding: 12px;
 }
 
 .dt-pager-info {
-    margin-right: auto;
     color: #6b7280;
     font-size: 13px;
 }
