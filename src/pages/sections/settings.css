@@ -1,19 +1,99 @@
-.settings-logout {
-    max-width: 280px;
-    margin: 24px auto 0;
+.settings-title {
+    margin: 0 0 16px;
+    font-size: 24px;
+    color: #111827;
 }
 
-.settings-logout .logout-button {
+.settings-list {
+    display: flex;
+    flex-direction: column;
+    max-width: 520px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.settings-tile {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 14px 16px;
+    border: 0;
+    border-bottom: 1px solid #f1f2f4;
+    background: #fff;
+    text-align: left;
+    cursor: pointer;
+}
+
+.settings-tile:last-child {
+    border-bottom: 0;
+}
+
+.settings-tile:hover:not(:disabled) {
+    background: #f9fafb;
+}
+
+.settings-tile:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.settings-tile-icon {
+    display: flex;
+    align-items: center;
     justify-content: center;
-    border: 1px solid #fca5a5;
+    flex: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.settings-tile-text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.settings-tile-text strong {
+    font-size: 15px;
+    color: #111827;
+}
+
+.settings-tile-text small {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.settings-tile-chevron {
+    color: #9ca3af;
+}
+
+.settings-tile.danger .settings-tile-icon {
+    background: #fee2e2;
     color: #b91c1c;
 }
 
-.settings-logout .logout-button:hover {
-    background-color: #fef2f2;
+.settings-tile.danger .settings-tile-text strong {
+    color: #b91c1c;
 }
 
-.settings-logout .logout-button:disabled {
-    opacity: 0.6;
-    cursor: default;
+.settings-error {
+    max-width: 520px;
+    margin: 0 0 12px;
+    color: #b91c1c;
+    font-size: 14px;
+}
+
+.settings-back {
+    margin-bottom: 16px;
+    padding: 6px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
 }
