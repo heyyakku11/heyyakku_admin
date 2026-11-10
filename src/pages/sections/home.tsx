@@ -4,6 +4,7 @@ import api from '../../services/api';
 import CheckCard from '../../components/CheckCard';
 import EmptyState from '../../components/EmptyState';
 import CreateCheck from './CreateCheck';
+import CreateTheme from './CreateTheme';
 import type { ApiResponse } from '../../types/apiResponse';
 import type { Check } from '../../types/check';
 import { getErrorMessage } from '../../utils/apiError';
@@ -19,6 +20,10 @@ function Home() {
     const [reloadKey, setReloadKey] = useState(0);
     // null = the list, 'new' = the create form, a check = the edit form for it.
     const [form, setForm] = useState<Check | 'new' | null>(null);
+    // The separate create-theme page opens on top of the check form, which stays mounted so nothing typed is lost.
+    const [themePage, setThemePage] = useState(false);
+    const [themesVersion, setThemesVersion] = useState(0);
+    const [newThemeId, setNewThemeId] = useState<string | undefined>();
     const [deleting, setDeleting] = useState<Check | null>(null);
     const [deleteError, setDeleteError] = useState<string | null>(null);
     const [deleteBusy, setDeleteBusy] = useState(false);
@@ -71,14 +76,31 @@ function Home() {
     // A one-deep navigation stack: the checks list, with the form pushed on top.
     if (form !== null) {
         return (
-            <CreateCheck
-                check={form === 'new' ? undefined : form}
-                onBack={() => setForm(null)}
-                onSaved={() => {
-                    setForm(null);
-                    retry();
-                }}
-            />
+            <>
+                <div hidden={themePage}>
+                    <CreateCheck
+                        check={form === 'new' ? undefined : form}
+                        onBack={() => setForm(null)}
+                        onSaved={() => {
+                            setForm(null);
+                            retry();
+                        }}
+                        onCreateTheme={() => setThemePage(true)}
+                        themesVersion={themesVersion}
+                        preferredThemeId={newThemeId}
+                    />
+                </div>
+                {themePage && (
+                    <CreateTheme
+                        onBack={() => setThemePage(false)}
+                        onCreated={(created) => {
+                            setNewThemeId(created.id);
+                            setThemesVersion((v) => v + 1);
+                            setThemePage(false);
+                        }}
+                    />
+                )}
+            </>
         );
     }
 
