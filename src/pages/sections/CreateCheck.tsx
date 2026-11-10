@@ -191,6 +191,7 @@ function CreateCheck({ check, onBack, onSaved, onCreateTheme, themesVersion, pre
             <div className="cc-body">
                 <form className="cc-form" onSubmit={review}>
                     <div className="cc-card">
+                        <div className="cc-row">
                         <div className="cc-field">
                             <label className="cc-label" htmlFor="cc-theme">Check theme</label>
                             <div className="cc-theme-row">
@@ -242,6 +243,16 @@ function CreateCheck({ check, onBack, onSaved, onCreateTheme, themesVersion, pre
                             )}
                         </div>
 
+                        <div className="cc-field">
+                            <label className="cc-label" htmlFor="cc-live">Live date (Monday)</label>
+                            <select id="cc-live" value={weekStart} onChange={(e) => setWeekStart(e.target.value)}>
+                                {mondays.map((m) => (
+                                    <option key={m.value} value={m.value}>{m.label}</option>
+                                ))}
+                            </select>
+                        </div>
+                        </div>
+
                         <label className="cc-field">
                             <span className="cc-label">Question</span>
                             <textarea
@@ -286,15 +297,6 @@ function CreateCheck({ check, onBack, onSaved, onCreateTheme, themesVersion, pre
                                 </button>
                             )}
                         </div>
-
-                        <label className="cc-field">
-                            <span className="cc-label">Live date (Monday)</span>
-                            <select value={weekStart} onChange={(e) => setWeekStart(e.target.value)}>
-                                {mondays.map((m) => (
-                                    <option key={m.value} value={m.value}>{m.label}</option>
-                                ))}
-                            </select>
-                        </label>
 
                         <label className="cc-toggle">
                             <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />

@@ -156,6 +156,14 @@
     cursor: pointer;
 }
 
+/* Check theme and live date sit on one row. */
+.cc-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+}
+
 /* Theme dropdown with the create-theme button beside it */
 .cc-theme-row {
     display: flex;
@@ -361,6 +369,10 @@
 }
 
 @media (max-width: 520px) {
+    .cc-row {
+        grid-template-columns: 1fr;
+    }
+
     .cc-grid {
         grid-template-columns: 1fr;
     }
