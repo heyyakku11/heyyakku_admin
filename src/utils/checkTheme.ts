@@ -19,14 +19,12 @@ export function resolveTheme(check: Pick<Check, 'theme' | 'title' | 'backgroundC
         backgroundColor: check.backgroundColor,
         stickerLabel: check.sticker,
     };
-    const headingColor = hex(c.headingColor, DEFAULT_INK);
-
     return {
         heading: (c.heading ?? '').trim(),
         sticker: (c.stickerLabel ?? '').trim(),
         background: hex(c.backgroundColor, DEFAULT_BACKGROUND),
-        headingColor,
-        // Admins only choose the heading color; the question and options follow the shared defaults.
+        // Admins only choose the background color and sticker; everything else follows the shared defaults.
+        headingColor: DEFAULT_INK,
         questionColor: DEFAULT_INK,
         accent: DEFAULT_ACCENT,
         stickerColor: DEFAULT_ACCENT,

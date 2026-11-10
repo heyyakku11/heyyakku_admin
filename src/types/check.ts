@@ -7,7 +7,6 @@ export interface CheckOption {
 export interface CheckThemeConfig {
     heading: string,
     backgroundColor: string,
-    headingColor: string,
     stickerLabel?: string | null,
 }
 
@@ -23,7 +22,6 @@ export interface CheckThemeDefinition {
     id: string,
     name: string,
     backgroundColor: string,
-    headingColor: string,
     sticker?: string | null,
 }
 

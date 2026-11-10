@@ -13,7 +13,6 @@ const WEEKS_AHEAD = 12;
 
 const HEX = /^#[0-9a-fA-F]{6}$/;
 const DEFAULT_BACKGROUND = '#F3F4F6';
-const DEFAULT_HEADING = '#111827';
 
 /** A color picker paired with a hex field, so admins can pick or paste a value. */
 function ColorField({ label, value, onChange }: { label: string; value: string; onChange: (hex: string) => void }) {
@@ -64,7 +63,6 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
     const [creatingTheme, setCreatingTheme] = useState(false);
     const [draftName, setDraftName] = useState('');
     const [draftBackground, setDraftBackground] = useState(DEFAULT_BACKGROUND);
-    const [draftHeading, setDraftHeading] = useState(DEFAULT_HEADING);
     const [draftSticker, setDraftSticker] = useState('');
     const [themeSaving, setThemeSaving] = useState(false);
     const [themeError, setThemeError] = useState<string | null>(null);
@@ -122,7 +120,6 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
               config: {
                   heading: draftName.trim() || 'Theme name',
                   backgroundColor: draftBackground,
-                  headingColor: draftHeading,
                   stickerLabel: draftSticker.trim() || null,
               },
           }
@@ -134,7 +131,6 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
                 config: {
                     heading: selected.name,
                     backgroundColor: selected.backgroundColor,
-                    headingColor: selected.headingColor,
                     stickerLabel: selected.sticker,
                 },
             }
@@ -162,7 +158,6 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
         if (!draftName.trim()) return 'Give the theme a name.';
         if (draftName.trim().length > 100) return 'The name must be at most 100 characters.';
         if (!HEX.test(draftBackground)) return 'Background color must be a hex color like #F3F4F6.';
-        if (!HEX.test(draftHeading)) return 'Heading color must be a hex color like #111827.';
         if (draftSticker.trim().length > 100) return 'The sticker must be at most 100 characters.';
         return null;
     }
@@ -190,7 +185,6 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
             const res = await api.post<ApiResponse<CheckThemeDefinition>>('/api/v1/yakku/check-themes', {
                 name: draftName.trim(),
                 backgroundColor: draftBackground,
-                headingColor: draftHeading,
                 sticker: draftSticker.trim() || undefined,
             });
             const created = res.data.data;
@@ -200,7 +194,6 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
             }
             setDraftName('');
             setDraftBackground(DEFAULT_BACKGROUND);
-            setDraftHeading(DEFAULT_HEADING);
             setDraftSticker('');
             setCreatingTheme(false);
         } catch (err) {
@@ -325,7 +318,7 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
                                             closeThemePanel();
                                         }}
                                     />
-                                    <span className="cc-theme-swatch" style={{ background: t.backgroundColor, color: t.headingColor }}>
+                                    <span className="cc-theme-swatch" style={{ background: t.backgroundColor }}>
                                         Aa
                                     </span>
                                     <span className="cc-theme-text">
@@ -365,8 +358,9 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
                                             onChange={(e) => setDraftName(e.target.value)}
                                         />
                                     </label>
-                                    <ColorField label="Background color" value={draftBackground} onChange={setDraftBackground} />
-                                    <ColorField label="Heading color" value={draftHeading} onChange={setDraftHeading} />
+                                    <div className="cc-span">
+                                        <ColorField label="Background color" value={draftBackground} onChange={setDraftBackground} />
+                                    </div>
                                     <label className="cc-field cc-span">
                                         <span className="cc-label">Sticker <em>(optional)</em></span>
                                         <input
