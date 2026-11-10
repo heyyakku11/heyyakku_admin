@@ -209,7 +209,7 @@ function CreateCheck({ check, onBack, onSaved, onCreateTheme, themesVersion, pre
                                 </select>
                                 <button
                                     type="button"
-                                    className={`cc-btn ${noThemes ? 'cc-btn-primary cc-btn-attention' : ''}`}
+                                    className={`cc-btn cc-btn-primary${noThemes ? ' cc-btn-attention' : ''}`}
                                     onClick={onCreateTheme}
                                     disabled={submitting}
                                 >
