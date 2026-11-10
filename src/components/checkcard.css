@@ -48,7 +48,7 @@
     border: 1px solid #000;
     border-radius: 4cqw;
     background: rgba(255, 255, 255, 0.72);
-    color: #d02e62;
+    color: var(--cc-sticker, #d02e62);
     font-size: 4.8cqw;
     line-height: 1.15;
     text-align: center;
@@ -68,6 +68,7 @@
 }
 
 .check-card-title {
+    color: var(--cc-heading, #21191d);
     margin: 4.4cqw 0 0;
     font-size: 9.6cqw;
     line-height: 1.05;
@@ -76,6 +77,7 @@
 }
 
 .check-card-question {
+    color: var(--cc-question, #21191d);
     margin: 2.4cqw 0 0;
     font-size: 5.6cqw;
     line-height: 1.2;
@@ -97,7 +99,8 @@
     gap: 3.2cqw;
     padding: 2cqw 4cqw 2cqw 2.4cqw;
     border-radius: 4cqw;
-    background: #fff;
+    background: var(--cc-opt-bg, #fff);
+    color: var(--cc-opt-text, #21191d);
 }
 
 .check-card-option-outlined {
@@ -113,7 +116,7 @@
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    background: rgba(208, 46, 98, 0.14);
+    background: color-mix(in srgb, var(--cc-accent, #d02e62) 14%, transparent);
     font-size: 4.4cqw;
     font-weight: 700;
 }

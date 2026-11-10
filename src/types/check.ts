@@ -3,9 +3,34 @@ export interface CheckOption {
     text: string,
 }
 
+/** What a check renders with. The type name is the heading; everything else is optional on other clients. */
+export interface CheckThemeConfig {
+    heading: string,
+    backgroundColor: string,
+    headingColor: string,
+    stickerLabel?: string | null,
+}
+
+export interface CheckTheme {
+    checkTypeId?: string | null,
+    checkType?: string | null,
+    isLegacy: boolean,
+    config: CheckThemeConfig,
+}
+
+/** A theme defined by an admin (GET /api/v1/yakku/check-themes). Its name is the check type and the heading. */
+export interface CheckThemeDefinition {
+    id: string,
+    name: string,
+    backgroundColor: string,
+    headingColor: string,
+    sticker?: string | null,
+}
+
 export interface Check {
     id: string,
     weekStart: string,
+    /** Legacy snapshot fields; the card renders from `theme` when it is present. */
     title: string,
     question: string,
     backgroundColor: string,
@@ -13,4 +38,7 @@ export interface Check {
     isActive: boolean,
     status: string,
     options: CheckOption[],
+    checkType?: string | null,
+    checkTypeId?: string | null,
+    theme?: CheckTheme,
 }

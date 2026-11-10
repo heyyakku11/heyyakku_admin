@@ -1,13 +1,7 @@
 import './checkcard.css';
 import type { Check } from '../types/check';
 
-const DEFAULT_BACKGROUND = '#FFF9F6';
-
-function safeColor(value: string) {
-    return /^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(value.trim())
-        ? value.trim()
-        : DEFAULT_BACKGROUND;
-}
+import { resolveTheme } from '../utils/checkTheme';
 
 /** Same layout as the app's current-week check card (mirror_check_card.dart). */
 interface CheckCardProps {
@@ -19,12 +13,24 @@ interface CheckCardProps {
 }
 
 function CheckCard({ check, showStatus = false, footer }: CheckCardProps) {
-    const showQuestion = check.question.trim() !== '' && check.question !== check.title;
-    const sticker = check.sticker.trim();
+    const theme = resolveTheme(check);
+    const showQuestion = check.question.trim() !== '' && check.question !== theme.heading;
+    const sticker = theme.sticker;
 
     return (
         <div className="check-card-frame">
-        <article className="check-card" style={{ background: safeColor(check.backgroundColor) }}>
+        <article
+            className="check-card"
+            style={{
+                background: theme.background,
+                '--cc-heading': theme.headingColor,
+                '--cc-question': theme.questionColor,
+                '--cc-accent': theme.accent,
+                '--cc-sticker': theme.stickerColor,
+                '--cc-opt-bg': theme.optionBackground,
+                '--cc-opt-text': theme.optionText,
+            } as React.CSSProperties}
+        >
             <div className="check-card-top">
                 {showStatus && (
                     <div className="check-card-tags">
@@ -41,7 +47,7 @@ function CheckCard({ check, showStatus = false, footer }: CheckCardProps) {
                 )}
             </div>
 
-            <h3 className="check-card-title" title={check.title}>{check.title}</h3>
+            <h3 className="check-card-title" title={theme.heading}>{theme.heading}</h3>
             {showQuestion && <p className="check-card-question" title={check.question}>{check.question}</p>}
 
             <div className="check-card-options">

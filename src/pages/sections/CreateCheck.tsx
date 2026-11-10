@@ -1,87 +1,16 @@
 import './createcheck.css';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import api from '../../services/api';
 import CheckCard from '../../components/CheckCard';
-import type { Check } from '../../types/check';
+import type { Check, CheckTheme, CheckThemeDefinition } from '../../types/check';
+import type { ApiResponse } from '../../types/apiResponse';
 import { getErrorMessage } from '../../utils/apiError';
 import { mondayOptions } from '../../utils/weeks';
 
 const MIN_OPTIONS = 2;
 const MAX_OPTIONS = 3;
 
-const PALETTE = [
-    { name: 'Blue', hex: '#BFDBFE' },
-    { name: 'Teal', hex: '#99E0DA' },
-    { name: 'Mint', hex: '#C8F2DD' },
-    { name: 'Green', hex: '#B7E4B0' },
-    { name: 'Sage', hex: '#CFDCC3' },
-    { name: 'Yellow', hex: '#FDEB9E' },
-    { name: 'Beige', hex: '#EFE2CC' },
-    { name: 'Orange', hex: '#FFD0A1' },
-    { name: 'Pink', hex: '#FFC9DB' },
-    { name: 'Red', hex: '#FFB3AD' },
-    { name: 'Maroon', hex: '#E0A9B5' },
-    { name: 'Purple', hex: '#D9C6F5' },
-    { name: 'Navy', hex: '#A9B8E0' },
-];
-const DEFAULT_COLOR = PALETTE[0].hex;
 const WEEKS_AHEAD = 12;
-
-/** Dropdown showing each palette color as a circle with its name on the right. */
-function ColorSelect({ value, onChange }: { value: string; onChange: (hex: string) => void }) {
-    const [open, setOpen] = useState(false);
-    const rootRef = useRef<HTMLDivElement>(null);
-    // An existing check may use a color outside the palette; keep it selectable.
-    const colors = PALETTE.some((p) => p.hex.toUpperCase() === value.toUpperCase())
-        ? PALETTE
-        : [{ name: 'Custom', hex: value }, ...PALETTE];
-    const selected = colors.find((p) => p.hex.toUpperCase() === value.toUpperCase()) ?? colors[0];
-
-    useEffect(() => {
-        if (!open) return;
-        const close = (e: MouseEvent) => {
-            if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
-        };
-        document.addEventListener('mousedown', close);
-        return () => document.removeEventListener('mousedown', close);
-    }, [open]);
-
-    return (
-        <div className="create-check-field" ref={rootRef} onKeyDown={(e) => e.key === 'Escape' && setOpen(false)}>
-            <span className="create-check-label">Background color</span>
-            <button
-                type="button"
-                className="color-select-trigger"
-                aria-haspopup="listbox"
-                aria-expanded={open}
-                onClick={() => setOpen((o) => !o)}
-            >
-                <i className="color-select-dot" style={{ background: selected.hex }} />
-                <span>{selected.name}</span>
-                <b aria-hidden="true">▾</b>
-            </button>
-            {open && (
-                <ul className="color-select-menu" role="listbox">
-                    {colors.map((p) => (
-                        <li
-                            key={p.name}
-                            role="option"
-                            aria-selected={p.hex === selected.hex}
-                            className={p.hex === selected.hex ? 'selected' : undefined}
-                            onClick={() => {
-                                onChange(p.hex);
-                                setOpen(false);
-                            }}
-                        >
-                            <i className="color-select-dot" style={{ background: p.hex }} />
-                            <span>{p.name}</span>
-                        </li>
-                    ))}
-                </ul>
-            )}
-        </div>
-    );
-}
 
 interface CreateCheckProps {
     /** The check being edited; omit to create a new one. */
@@ -92,10 +21,11 @@ interface CreateCheckProps {
 
 function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
     const editing = check !== undefined;
-    const [title, setTitle] = useState(check?.title ?? '');
     const [question, setQuestion] = useState(check?.question ?? '');
-    const [sticker, setSticker] = useState(check?.sticker ?? '');
-    const [color, setColor] = useState(check?.backgroundColor ?? DEFAULT_COLOR);
+    // Legacy checks have no type; they stay legacy unless the admin picks one.
+    const [typeId, setTypeId] = useState<string>(check?.checkTypeId ?? '');
+    const [themes, setThemes] = useState<CheckThemeDefinition[]>([]);
+    const [typesError, setTypesError] = useState<string | null>(null);
     const [options, setOptions] = useState<string[]>(check ? check.options.map((o) => o.text) : ['', '']);
     const [isActive, setIsActive] = useState(check?.isActive ?? true);
     const mondays = useMemo(() => {
@@ -119,14 +49,51 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
     const weekLabel = mondays.find((m) => m.value === weekStart)?.label ?? weekStart;
     const trimmedOptions = options.map((o) => o.trim());
 
+    // Themes are defined by admins on the backend; the form only picks one and previews it.
+    useEffect(() => {
+        let cancelled = false;
+        api.get<ApiResponse<CheckThemeDefinition[]>>('/api/v1/yakku/check-themes')
+            .then((res) => {
+                if (cancelled) return;
+                const list = res.data.data ?? [];
+                setThemes(list);
+                const firstActive = list[0];
+                if (!check && firstActive) setTypeId((current) => current || firstActive.id);
+            })
+            .catch((e) => {
+                if (!cancelled) setTypesError(getErrorMessage(e));
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, [check]);
+
+    // A legacy check with no type keeps previewing its own derived theme until the admin picks one.
+    const selected = themes.find((t) => t.id === typeId);
+    const theme: CheckTheme | undefined = selected
+        ? {
+            checkTypeId: selected.id,
+            checkType: selected.name,
+            isLegacy: false,
+            config: {
+                heading: selected.name,
+                backgroundColor: selected.backgroundColor,
+                headingColor: selected.headingColor,
+                stickerLabel: selected.sticker,
+            },
+        }
+        : check?.theme;
+
     // Fills the card with placeholders until the admin has typed something.
     const preview: Check = {
         id: 'preview',
         weekStart,
-        title: title.trim() || 'Your check title',
+        title: theme?.config.heading ?? '',
         question: question.trim() || 'Your question will appear here',
-        backgroundColor: color,
-        sticker: sticker.trim() || 'Sticker',
+        backgroundColor: theme?.config.backgroundColor ?? '',
+        sticker: theme?.config.stickerLabel ?? '',
+        theme,
+        checkTypeId: typeId || null,
         isActive,
         status: 'upcoming',
         options: options.map((text, i) => ({
@@ -136,12 +103,9 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
     };
 
     function problem(): string | null {
-        if (!title.trim()) return 'Title is required.';
-        if (title.trim().length > 100) return 'Title must be at most 100 characters.';
+        if (!editing && !typeId) return 'Pick a check type.';
         if (!question.trim()) return 'Question is required.';
         if (question.trim().length > 500) return 'Question must be at most 500 characters.';
-        if (!sticker.trim()) return 'Sticker is required.';
-        if (sticker.trim().length > 100) return 'Sticker must be at most 100 characters.';
         if (!weekStart) return 'Pick the week this check goes live.';
         if (trimmedOptions.some((o) => !o)) return 'Fill in every option, or remove the empty one.';
         if (trimmedOptions.some((o) => o.length > 200)) return 'Each option must be at most 200 characters.';
@@ -173,12 +137,11 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
         setSubmitting(true);
         setError(null);
         try {
+            // No visual or theme fields are sent: the backend resolves them from the type.
             const body = {
                 weekStart,
-                title: title.trim(),
+                checkTypeId: typeId || undefined,
                 question: question.trim(),
-                backgroundColor: color,
-                sticker: sticker.trim(),
                 options: trimmedOptions,
                 isActive,
             };
@@ -206,13 +169,32 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
 
             <div className="create-check-body">
                 <form className="create-check-form" onSubmit={review}>
-                    <label>
-                        Title
-                        <input value={title} maxLength={100} placeholder="Your check title" onChange={(e) => setTitle(e.target.value)} />
-                    </label>
+                    <fieldset className="create-check-types">
+                        <legend>1. Check type</legend>
+                        {themes.map((type) => (
+                            <label
+                                key={type.id}
+                                className={`create-check-type${typeId === type.id ? ' selected' : ''}`}
+                            >
+                                <input
+                                    type="radio"
+                                    name="checkType"
+                                    value={type.id}
+                                    checked={typeId === type.id}
+                                    onChange={() => setTypeId(type.id)}
+                                />
+                                {type.name}
+                            </label>
+                        ))}
+                        {editing && !check?.checkTypeId && (
+                            <p className="create-check-hint">This is a legacy check. Pick a type to move it to the new theme system.</p>
+                        )}
+                        {typesError && <p className="create-check-error" role="alert">{typesError}</p>}
+                        <p className="create-check-hint">The type decides the heading, colors and sticker automatically.</p>
+                    </fieldset>
 
                     <label>
-                        Question
+                        2. Question
                         <textarea
                             rows={3}
                             placeholder="Your question will appear here"
@@ -224,14 +206,7 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
 
                     <div className="create-check-row">
                         <label>
-                            Sticker
-                            <input value={sticker} maxLength={100} placeholder="Sticker" onChange={(e) => setSticker(e.target.value)} />
-                        </label>
-
-                        <ColorSelect value={color} onChange={setColor} />
-
-                        <label>
-                            Goes live on
+                            3. Goes live on (Monday)
                             <select value={weekStart} onChange={(e) => setWeekStart(e.target.value)}>
                                 {mondays.map((m) => (
                                     <option key={m.value} value={m.value}>{m.label}</option>
