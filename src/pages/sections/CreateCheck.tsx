@@ -1,6 +1,7 @@
 import './createcheck.css';
 import { useEffect, useMemo, useState } from 'react';
 import api from '../../services/api';
+import BackButton from '../../components/BackButton';
 import CheckCard from '../../components/CheckCard';
 import type { Check, CheckTheme, CheckThemeDefinition } from '../../types/check';
 import type { ApiResponse } from '../../types/apiResponse';
@@ -179,9 +180,7 @@ function CreateCheck({ check, onBack, onSaved, onCreateTheme, themesVersion, pre
     return (
         <div className="cc">
             <header className="cc-header">
-                <button type="button" className="cc-btn" onClick={onBack} disabled={submitting}>
-                    ← Back
-                </button>
+                <BackButton onClick={onBack} disabled={submitting} />
                 <div>
                     <h2>{editing ? 'Edit check' : 'Create check'}</h2>
                     <p>Pick a theme, write the question and choose when it goes live.</p>

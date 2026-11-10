@@ -42,12 +42,66 @@
     cursor: pointer;
 }
 
-.home-week {
-    padding: 8px 10px;
+/* Week slider: previous arrow, the Monday date, next arrow. */
+.home-weeknav {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px;
     border: 1px solid #d1d5db;
-    border-radius: 8px;
+    border-radius: 10px;
     background: #fff;
-    font: inherit;
+}
+
+.home-weeknav-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 168px;
+    color: #111827;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.25;
+    white-space: nowrap;
+}
+
+.home-weeknav-label small {
+    color: #6b7280;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+.home-weeknav-arrow {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #111827;
+    cursor: pointer;
+}
+
+.home-weeknav-arrow:hover:not(:disabled) {
+    background: #f3f4f6;
+}
+
+.home-weeknav-arrow:disabled {
+    color: #d1d5db;
+    cursor: not-allowed;
+}
+
+.home-weeknav-arrow:focus-visible {
+    outline: 2px solid #111827;
+    outline-offset: 1px;
+}
+
+@media (max-width: 520px) {
+    .home-weeknav-label {
+        min-width: 140px;
+    }
 }
 
 .home-add {

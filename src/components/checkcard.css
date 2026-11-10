@@ -1,164 +1,47 @@
 /*
- * Standard check card: a fixed 10:14 portrait box whose width comes from its
- * container. Every size inside is in container-width units (cqw), so the card
- * scales as one piece and always has the same proportions, whatever its content.
- * Long text is clamped instead of stretching the card.
+ * Check card preview, modelled on the Yakku app card. The card is a fixed 10:15 portrait box whose width
+ * comes from its container, and every size inside is in container-width units (cqw), so it scales as one
+ * piece and keeps the same proportions at any width. Long text is clamped instead of stretching the card.
+ * The numbers were taken from a 405px-wide screenshot of the app (1cqw = 4.05px there).
  */
 .check-card-frame {
     container-type: inline-size;
     width: 100%;
+    /* room for the offset shadow so it is not cut off by a parent */
+    padding: 0 1.8cqw 2cqw 0;
+    box-sizing: border-box;
 }
 
-/* Sized in cqw of the frame: a container's own properties would resolve against its parent instead. */
 .check-card {
+    --ink: #1b1418;
     display: flex;
     flex-direction: column;
     width: 100%;
-    aspect-ratio: 10 / 14;
+    aspect-ratio: 10 / 15;
     box-sizing: border-box;
-    padding: 5.2cqw 4.8cqw 5.2cqw 5.2cqw;
-    border-radius: 8cqw;
-    box-shadow: 0 3cqw 7cqw rgba(33, 25, 29, 0.08);
-    color: #21191d;
-    overflow: hidden;
+    padding: 5.4cqw 5.4cqw 4.6cqw;
+    border: 0.5cqw solid var(--ink);
+    border-radius: 7cqw;
+    box-shadow: 1.2cqw 1.6cqw 0 var(--ink);
+    color: var(--ink);
+    font-family: 'DM Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-.check-card-top {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 2cqw;
-    min-height: 8.8cqw;
-}
-
-.check-card-sticker-col {
-    display: flex;
-    justify-content: flex-end;
-    margin-left: auto;
-    min-width: 0;
-    max-width: 100%;
-}
-
-.check-card-sticker {
-    display: inline-block;
-    max-width: 100%;
-    box-sizing: border-box;
-    transform: rotate(-0.08rad);
-    padding: 1.2cqw 2.8cqw;
-    border: 1px solid #000;
-    border-radius: 4cqw;
-    background: rgba(255, 255, 255, 0.72);
-    color: var(--cc-sticker, #d02e62);
-    font-size: 4.8cqw;
-    line-height: 1.15;
-    text-align: center;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.check-card-title,
-.check-card-question {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
-    overflow: hidden;
-    overflow-wrap: anywhere;
-}
-
-.check-card-title {
-    color: var(--cc-heading, #21191d);
-    margin: 4.4cqw 0 0;
-    font-size: 9.6cqw;
-    line-height: 1.05;
-    font-weight: 800;
-    letter-spacing: -0.3cqw;
-}
-
-.check-card-question {
-    color: var(--cc-question, #21191d);
-    margin: 2.4cqw 0 0;
-    font-size: 5.6cqw;
-    line-height: 1.2;
-    font-weight: 600;
-    letter-spacing: -0.1cqw;
-}
-
-/* Directly under the question; any spare height ends up below the footer. */
-.check-card-options {
-    display: flex;
-    flex-direction: column;
-    gap: 2.4cqw;
-    margin-top: 4cqw;
-}
-
-.check-card-option {
-    display: flex;
-    align-items: center;
-    gap: 3.2cqw;
-    padding: 2cqw 4cqw 2cqw 2.4cqw;
-    border-radius: 4cqw;
-    background: var(--cc-opt-bg, #fff);
-    color: var(--cc-opt-text, #21191d);
-}
-
-.check-card-option-outlined {
-    background: transparent;
-    border: 1.4px dashed rgba(33, 25, 29, 0.35);
-}
-
-.check-card-letter {
-    flex: none;
-    width: 8.8cqw;
-    height: 8.8cqw;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: color-mix(in srgb, var(--cc-accent, #d02e62) 14%, transparent);
-    font-size: 4.4cqw;
-    font-weight: 700;
-}
-
-.check-card-letter-outlined {
-    background: transparent;
-    border: 1px dashed rgba(33, 25, 29, 0.35);
-    color: rgba(33, 25, 29, 0.7);
-}
-
-.check-card-option-text {
-    flex: 1;
-    min-width: 0;
-    font-size: 4.8cqw;
-    font-weight: 600;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.check-card-pct {
-    flex: none;
-    color: rgba(33, 25, 29, 0.35);
-    font-size: 4.4cqw;
-    font-weight: 600;
-    letter-spacing: 0.15cqw;
-}
-
+/* Status tags (checks list only) */
 .check-card-tags {
     display: flex;
-    flex: none;
     gap: 1.6cqw;
+    margin-bottom: 2.4cqw;
 }
 
 .check-card-tag {
-    padding: 0.8cqw 2.8cqw;
+    padding: 0.6cqw 2.6cqw;
     border-radius: 6cqw;
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.75);
     color: #4b5563;
-    font-size: 3.6cqw;
+    font-size: 3.2cqw;
     font-weight: 700;
-    line-height: 1.3;
+    line-height: 1.4;
 }
 
 .check-card-tag.on {
@@ -171,20 +54,210 @@
     color: #991b1b;
 }
 
+/* Eyebrow pill + sticker */
+.check-card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2cqw;
+}
+
+.check-card-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 1.8cqw;
+    flex: none;
+    height: 7.2cqw;
+    padding: 0 3.2cqw 0 2.8cqw;
+    border-radius: 3.8cqw;
+    background: var(--ink);
+    color: #fff;
+    font-size: 3.1cqw;
+    font-weight: 800;
+    letter-spacing: 0.18cqw;
+    white-space: nowrap;
+}
+
+.check-card-eyebrow i {
+    width: 1.7cqw;
+    height: 1.7cqw;
+    border-radius: 50%;
+    background: #fff;
+}
+
+.check-card-sticker {
+    max-width: 36cqw;
+    box-sizing: border-box;
+    margin-top: -1cqw;
+    transform: rotate(-6deg);
+    padding: 1.4cqw 3cqw;
+    border: 0.25cqw solid var(--ink);
+    border-radius: 3.4cqw;
+    background: rgba(255, 255, 255, 0.78);
+    color: var(--ck-sticker, #d02e62);
+    font-family: 'Pacifico', cursive;
+    font-size: 4.4cqw;
+    line-height: 1.18;
+    text-align: center;
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+}
+
+/* Heading + question */
+.check-card-title,
+.check-card-question {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+}
+
+.check-card-title {
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    margin: 3.6cqw 0 0;
+    color: var(--ck-heading, var(--ink));
+    font-family: 'Outfit', 'DM Sans', 'Inter', sans-serif;
+    font-size: 9cqw;
+    font-weight: 800;
+    line-height: 1.04;
+    letter-spacing: -0.3cqw;
+}
+
+.check-card-question {
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    margin: 2.4cqw 0 0;
+    color: var(--ck-question, var(--ink));
+    font-family: 'Outfit', 'DM Sans', 'Inter', sans-serif;
+    font-size: 5.9cqw;
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.12cqw;
+}
+
+/* Options */
+.check-card-options {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5cqw;
+    margin-top: 4.4cqw;
+}
+
+.check-card-option {
+    display: flex;
+    align-items: center;
+    gap: 3.6cqw;
+    box-sizing: border-box;
+    min-height: 14.4cqw;
+    padding: 0 4.2cqw 0 3.4cqw;
+    border-radius: 4.8cqw;
+    background: var(--ck-opt-bg, #fff);
+    color: var(--ck-opt-text, var(--ink));
+}
+
+.check-card-letter {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 7.4cqw;
+    height: 7.4cqw;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--ck-accent, #d02e62) 12%, #fff);
+    color: var(--ink);
+    font-size: 3.5cqw;
+    font-weight: 700;
+}
+
+.check-card-option-text {
+    flex: 1;
+    min-width: 0;
+    font-size: 4.3cqw;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* "Friends add their own" */
+.check-card-option-outlined {
+    border: 0.3cqw dashed color-mix(in srgb, var(--ck-accent, #d02e62) 60%, transparent);
+    background: rgba(255, 255, 255, 0.5);
+    color: var(--ink);
+}
+
+.check-card-option-outlined .check-card-option-text {
+    font-weight: 700;
+}
+
+.check-card-letter-outlined {
+    background: #fff;
+}
+
+.check-card-plus {
+    flex: none;
+    color: var(--ck-accent, #d02e62);
+    font-size: 6cqw;
+    font-weight: 400;
+    line-height: 1;
+}
+
+/* Ask now + note */
+.check-card-ask {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2.4cqw;
+    margin-top: 3.8cqw;
+    min-height: 14.4cqw;
+    border-radius: 7.2cqw;
+    background: var(--ink);
+    color: #fff;
+    font-size: 5cqw;
+    font-weight: 700;
+}
+
+.check-card-ask svg {
+    width: 5.2cqw;
+    height: 5.2cqw;
+}
+
+.check-card-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.8cqw;
+    margin: 3.2cqw 0 0;
+    color: color-mix(in srgb, var(--ink) 70%, transparent);
+    font-size: 3.5cqw;
+    font-weight: 700;
+}
+
+.check-card-note svg {
+    width: 3.8cqw;
+    height: 3.8cqw;
+}
+
+/* Edit / Delete buttons (checks list) */
 .check-card-footer {
     display: flex;
     gap: 2.4cqw;
     margin-top: auto;
-    padding-top: 2.4cqw;
+    padding-top: 3cqw;
 }
 
 .check-card-footer button {
     flex: 1;
     padding: 2cqw 0;
-    border: 1px solid rgba(33, 25, 29, 0.25);
+    border: 1px solid rgba(27, 20, 24, 0.25);
     border-radius: 3.6cqw;
     background: rgba(255, 255, 255, 0.85);
-    font-size: 4.4cqw;
+    font-size: 4cqw;
     font-weight: 600;
     cursor: pointer;
 }

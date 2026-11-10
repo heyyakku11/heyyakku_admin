@@ -29,7 +29,17 @@ function Home() {
     const [deleteBusy, setDeleteBusy] = useState(false);
     const weeks = useMemo(() => mondayOptions(WEEKS_BACK, WEEKS_AHEAD), []);
     const [week, setWeek] = useState(() => weeks.find((w) => w.isCurrent)!.value);
-    const isCurrentWeek = weeks.find((w) => w.value === week)?.isCurrent ?? false;
+    const weekIndex = weeks.findIndex((w) => w.value === week);
+    const isCurrentWeek = weeks[weekIndex]?.isCurrent ?? false;
+
+    // Moves the week slider by one week (-1 = previous, 1 = next) within the available range.
+    function stepWeek(delta: number) {
+        const next = weeks[weekIndex + delta];
+        if (!next) return;
+        setLoading(true);
+        setError(null);
+        setWeek(next.value);
+    }
 
     useEffect(() => {
         let cancelled = false;
@@ -122,20 +132,34 @@ function Home() {
                         <path d="M21 3v6h-6" />
                     </svg>
                 </button>
-                <select
-                    className="home-week"
-                    aria-label="Live week"
-                    value={week}
-                    onChange={(e) => {
-                        setLoading(true);
-                        setError(null);
-                        setWeek(e.target.value);
-                    }}
-                >
-                    {weeks.map((w) => (
-                        <option key={w.value} value={w.value}>Live week: {w.label}</option>
-                    ))}
-                </select>
+                <div className="home-weeknav" role="group" aria-label="Live week">
+                    <button
+                        type="button"
+                        className="home-weeknav-arrow"
+                        aria-label="Previous week"
+                        onClick={() => stepWeek(-1)}
+                        disabled={weekIndex <= 0}
+                    >
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M15 5l-7 7 7 7" />
+                        </svg>
+                    </button>
+                    <span className="home-weeknav-label" aria-live="polite">
+                        <small>Live week</small>
+                        {weeks[weekIndex]?.label ?? week}
+                    </span>
+                    <button
+                        type="button"
+                        className="home-weeknav-arrow"
+                        aria-label="Next week"
+                        onClick={() => stepWeek(1)}
+                        disabled={weekIndex < 0 || weekIndex >= weeks.length - 1}
+                    >
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
                 <button type="button" className="home-add" onClick={() => setForm('new')}>
                     + Add check
                 </button>

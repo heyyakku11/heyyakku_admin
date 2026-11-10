@@ -29,6 +29,31 @@
     margin-bottom: 24px;
 }
 
+/* Borderless iOS-style back chevron */
+.cc-back {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    margin-left: -8px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--cc-text);
+    cursor: pointer;
+}
+
+.cc-back:hover:not(:disabled) {
+    background: #f3f4f6;
+}
+
+.cc-back:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .cc-header h2 {
     margin: 0;
     font-size: 24px;
@@ -340,7 +365,7 @@
 /* Preview */
 .cc-preview {
     flex: none;
-    width: clamp(232px, 24vw, 320px);
+    width: clamp(280px, 28vw, 380px);
     position: sticky;
     top: 16px;
 }

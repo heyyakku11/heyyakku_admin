@@ -1,6 +1,7 @@
 import './createcheck.css';
 import { useState } from 'react';
 import api from '../../services/api';
+import BackButton from '../../components/BackButton';
 import CheckCard from '../../components/CheckCard';
 import ColorField, { HEX_COLOR } from '../../components/ColorField';
 import type { Check, CheckThemeDefinition } from '../../types/check';
@@ -81,9 +82,7 @@ function CreateTheme({ onBack, onCreated }: CreateThemeProps) {
     return (
         <div className="cc">
             <header className="cc-header">
-                <button type="button" className="cc-btn" onClick={onBack} disabled={saving}>
-                    ← Back
-                </button>
+                <BackButton onClick={onBack} disabled={saving} />
                 <div>
                     <h2>Create theme</h2>
                     <p>A theme sets the heading, background color and sticker of every check that uses it.</p>
