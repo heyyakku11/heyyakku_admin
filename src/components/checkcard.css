@@ -8,7 +8,7 @@
     container-type: inline-size;
     width: 100%;
     /* room for the offset shadow so it is not cut off by a parent */
-    padding: 0 1.8cqw 2cqw 0;
+    padding: 0 1.8cqw 2cqw;
     box-sizing: border-box;
 }
 

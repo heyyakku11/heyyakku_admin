@@ -128,8 +128,10 @@ function CreateTheme({ onBack, onCreated }: CreateThemeProps) {
                 </form>
 
                 <aside className="cc-preview" aria-label="Preview">
-                    <p>Preview</p>
-                    <CheckCard check={preview} />
+                    <div className="cc-preview-inner">
+                        <p>Preview</p>
+                        <CheckCard check={preview} />
+                    </div>
                 </aside>
             </div>
         </div>

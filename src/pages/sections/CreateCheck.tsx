@@ -317,8 +317,10 @@ function CreateCheck({ check, onBack, onSaved, onCreateTheme, themesVersion, pre
                 </form>
 
                 <aside className="cc-preview" aria-label="Preview">
-                    <p>Preview</p>
-                    <CheckCard check={preview} />
+                    <div className="cc-preview-inner">
+                        <p>Preview</p>
+                        <CheckCard check={preview} />
+                    </div>
                 </aside>
             </div>
 
