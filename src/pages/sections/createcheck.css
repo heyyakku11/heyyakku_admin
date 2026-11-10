@@ -81,15 +81,11 @@
     gap: 16px;
 }
 
-/* Sections */
+/* The form fields sit directly on the page: no outer box, border or padding. */
 .cc-card {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    padding: 20px;
-    background: var(--cc-surface);
-    border: 1px solid var(--cc-border);
-    border-radius: 12px;
+    gap: 20px;
 }
 
 /* Fields */
@@ -411,10 +407,6 @@
 
     .cc-grid {
         grid-template-columns: 1fr;
-    }
-
-    .cc-card {
-        padding: 16px;
     }
 }
 
