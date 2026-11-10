@@ -23,8 +23,8 @@ export function resolveTheme(check: Pick<Check, 'theme' | 'title' | 'backgroundC
         heading: (c.heading ?? '').trim(),
         sticker: (c.stickerLabel ?? '').trim(),
         background: hex(c.backgroundColor, DEFAULT_BACKGROUND),
-        // Admins only choose the background color and sticker; everything else follows the shared defaults.
-        headingColor: DEFAULT_INK,
+        // The label color colors the heading; the question and options follow the shared defaults.
+        headingColor: hex(c.labelColor, DEFAULT_INK),
         questionColor: DEFAULT_INK,
         accent: DEFAULT_ACCENT,
         stickerColor: DEFAULT_ACCENT,

@@ -17,15 +17,9 @@ interface CreateCheckProps {
     check?: Check;
     onBack: () => void;
     onSaved: () => void;
-    /** Opens the separate "create theme" page. */
-    onCreateTheme: () => void;
-    /** Bumped by the parent after a theme is created, so the list is reloaded. */
-    themesVersion: number;
-    /** The theme to select after that reload (the one just created). */
-    preferredThemeId?: string;
 }
 
-function CreateCheck({ check, onBack, onSaved, onCreateTheme, themesVersion, preferredThemeId }: CreateCheckProps) {
+function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
     const editing = check !== undefined;
     // Legacy checks have no theme; they stay legacy unless the admin picks one.
     const [typeId, setTypeId] = useState<string>(check?.checkTypeId ?? '');
@@ -58,8 +52,7 @@ function CreateCheck({ check, onBack, onSaved, onCreateTheme, themesVersion, pre
     const weekLabel = mondays.find((m) => m.value === weekStart)?.label ?? weekStart;
     const trimmedOptions = options.map((o) => o.trim());
 
-    // Themes are defined by admins on the backend. The first one is selected by default; a theme
-    // that was just created (preferredThemeId) is selected instead.
+    // Themes come from the backend. The first one is selected by default.
     useEffect(() => {
         let cancelled = false;
         api.get<ApiResponse<CheckThemeDefinition[]>>('/api/v1/yakku/check-themes')
@@ -69,7 +62,6 @@ function CreateCheck({ check, onBack, onSaved, onCreateTheme, themesVersion, pre
                 setThemes(list);
                 setThemesError(null);
                 setTypeId((current) => {
-                    if (preferredThemeId && list.some((t) => t.id === preferredThemeId)) return preferredThemeId;
                     if (current && list.some((t) => t.id === current)) return current;
                     return check ? current : (list[0]?.id ?? '');
                 });
@@ -83,7 +75,7 @@ function CreateCheck({ check, onBack, onSaved, onCreateTheme, themesVersion, pre
         return () => {
             cancelled = true;
         };
-    }, [check, themesReload, themesVersion, preferredThemeId]);
+    }, [check, themesReload]);
 
     const selected = themes.find((t) => t.id === typeId);
     const noThemes = !themesLoading && !themesError && themes.length === 0;
@@ -97,6 +89,7 @@ function CreateCheck({ check, onBack, onSaved, onCreateTheme, themesVersion, pre
               config: {
                   heading: selected.name,
                   backgroundColor: selected.backgroundColor,
+                  labelColor: selected.labelColor,
                   stickerLabel: selected.sticker,
               },
           }
@@ -121,7 +114,7 @@ function CreateCheck({ check, onBack, onSaved, onCreateTheme, themesVersion, pre
     };
 
     function problem(): string | null {
-        if (noThemes) return 'Create a theme first, then pick it here.';
+        if (noThemes) return 'No check themes are available yet.';
         if (!editing && !typeId) return 'Pick a check theme.';
         if (!question.trim()) return 'Question is required.';
         if (question.trim().length > 500) return 'Question must be at most 500 characters.';
@@ -207,19 +200,11 @@ function CreateCheck({ check, onBack, onSaved, onCreateTheme, themesVersion, pre
                                         <option key={t.id} value={t.id}>{t.name}</option>
                                     ))}
                                 </select>
-                                <button
-                                    type="button"
-                                    className={`cc-btn cc-btn-primary${noThemes ? ' cc-btn-attention' : ''}`}
-                                    onClick={onCreateTheme}
-                                    disabled={submitting}
-                                >
-                                    Create theme
-                                </button>
                             </div>
 
                             {noThemes && (
                                 <p className="cc-error" role="alert">
-                                    No check themes yet. Create a theme before creating a check.
+                                    No check themes are available yet, so a check cannot be created.
                                 </p>
                             )}
                             {themesError && (

@@ -233,15 +233,6 @@
     min-width: 0;
 }
 
-.cc-theme-row .cc-btn {
-    flex: none;
-}
-
-/* Draws the eye to the button when there is no theme yet. */
-.cc-btn-attention {
-    box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.16);
-}
-
 .cc-help {
     color: var(--cc-muted);
     font-size: 12.5px;
