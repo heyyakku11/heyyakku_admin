@@ -167,12 +167,12 @@ function Home() {
                             "{deleting.title}" will be removed permanently. A check that users have already
                             answered cannot be deleted; make it inactive instead.
                         </p>
-                        {deleteError && <p className="create-check-error" role="alert">{deleteError}</p>}
-                        <div className="create-check-actions">
-                            <button type="button" onClick={() => setDeleting(null)} disabled={deleteBusy}>
+                        {deleteError && <p className="cc-error" role="alert">{deleteError}</p>}
+                        <div className="cc-actions">
+                            <button type="button" className="cc-btn" onClick={() => setDeleting(null)} disabled={deleteBusy}>
                                 Cancel
                             </button>
-                            <button type="button" className="create-check-submit" onClick={confirmDelete} disabled={deleteBusy}>
+                            <button type="button" className="cc-btn cc-btn-primary" onClick={confirmDelete} disabled={deleteBusy}>
                                 {deleteBusy ? 'Deleting…' : 'Delete'}
                             </button>
                         </div>
