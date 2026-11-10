@@ -119,12 +119,9 @@ function CreateTheme({ onBack, onCreated }: CreateThemeProps) {
 
                     {error && <p className="cc-error" role="alert">{error}</p>}
 
-                    <div className="cc-actions">
-                        <button type="button" className="cc-btn" onClick={onBack} disabled={saving}>Cancel</button>
-                        <button type="submit" className="cc-btn cc-btn-primary" disabled={saving}>
-                            {saving ? 'Saving…' : 'Create theme'}
-                        </button>
-                    </div>
+                    <button type="submit" className="cc-btn cc-btn-primary cc-submit" disabled={saving}>
+                        {saving ? 'Saving…' : 'Create theme'}
+                    </button>
                 </form>
 
                 <aside className="cc-preview" aria-label="Preview">

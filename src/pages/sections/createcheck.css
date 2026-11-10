@@ -108,23 +108,61 @@
     color: var(--cc-muted);
 }
 
+/* Text inputs, textarea and dropdowns share one look: 44px tall, 10px corners, dark focus ring. */
 .cc input:not([type='checkbox']):not([type='radio']):not([type='color']),
 .cc textarea,
 .cc select {
     box-sizing: border-box;
     width: 100%;
-    min-height: 40px;
-    padding: 8px 12px;
+    min-height: 44px;
+    padding: 10px 14px;
     border: 1px solid var(--cc-border-strong);
-    border-radius: 8px;
-    background: var(--cc-surface);
+    border-radius: 10px;
+    background-color: var(--cc-surface);
     color: var(--cc-text);
     font: inherit;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .cc textarea {
     resize: vertical;
-    min-height: 88px;
+    min-height: 96px;
+    line-height: 1.5;
+}
+
+/* Dropdowns: native arrow replaced by a chevron so they look the same everywhere. */
+.cc select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 40px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 16px;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
+
+.cc input:not([type='checkbox']):not([type='radio']):not([type='color']):hover:not(:disabled),
+.cc textarea:hover:not(:disabled),
+.cc select:hover:not(:disabled) {
+    border-color: #9ca3af;
+}
+
+.cc input:not([type='checkbox']):not([type='radio']):not([type='color']):focus,
+.cc textarea:focus,
+.cc select:focus {
+    outline: none;
+    border-color: var(--cc-text);
+    box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.12);
+}
+
+.cc select:disabled,
+.cc input:disabled,
+.cc textarea:disabled {
+    background-color: var(--cc-bg);
+    color: var(--cc-muted);
+    cursor: not-allowed;
 }
 
 .cc input::placeholder,
@@ -132,11 +170,9 @@
     color: #9ca3af;
 }
 
-.cc input:focus-visible,
-.cc textarea:focus-visible,
-.cc select:focus-visible,
+/* Keyboard focus for everything else (buttons, checkbox). */
 .cc button:focus-visible,
-.cc-theme:has(input:focus-visible) {
+.cc input[type='checkbox']:focus-visible {
     outline: 2px solid var(--cc-text);
     outline-offset: 2px;
 }
@@ -283,8 +319,8 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 40px;
-    padding: 0 16px;
+    min-height: 44px;
+    padding: 0 18px;
     border: 1px solid var(--cc-border-strong);
     border-radius: 8px;
     background: var(--cc-surface);
@@ -306,6 +342,14 @@
 
 .cc-btn-primary:hover:not(:disabled) {
     background: #1f2937;
+}
+
+/* The main submit button: full width, taller. */
+.cc-submit {
+    width: 100%;
+    min-height: 48px;
+    font-size: 15px;
+    font-weight: 600;
 }
 
 .cc-btn-dashed {
