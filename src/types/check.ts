@@ -23,6 +23,7 @@ export interface CheckThemeDefinition {
     name: string,
     backgroundColor: string,
     labelColor: string,
+    tag?: string | null,
 }
 
 export interface Check {
@@ -38,4 +39,16 @@ export interface Check {
     checkType?: string | null,
     checkTypeId?: string | null,
     theme?: CheckTheme,
+}
+
+/** A just-for-fun card (GET /api/v1/yakku/fun-cards): no live week, always styled with the Just for fun theme. */
+export interface AdminFunCard {
+    id: string,
+    title: string,
+    question: string,
+    backgroundColor: string,
+    isActive: boolean,
+    options: CheckOption[],
+    theme?: CheckTheme,
+    createdAt: string,
 }

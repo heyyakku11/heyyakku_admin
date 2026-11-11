@@ -13,6 +13,8 @@ interface CheckCardProps {
     showStatus?: boolean;
     /** Rendered at the bottom of the card, e.g. the Edit and Delete buttons. */
     footer?: React.ReactNode;
+    /** The dark pill above the heading. Defaults to the weekly check one. */
+    eyebrow?: string;
 }
 
 function ShareIcon() {
@@ -35,7 +37,7 @@ function LockIcon() {
 }
 
 
-function CheckCard({ check, showStatus = false, footer }: CheckCardProps) {
+function CheckCard({ check, showStatus = false, footer, eyebrow = 'THIS WEEK\'S DROP' }: CheckCardProps) {
     const theme = resolveTheme(check);
     const showQuestion = check.question.trim() !== '' && check.question !== theme.heading;
     const letter = (i: number) => String.fromCharCode(65 + i);
@@ -66,7 +68,7 @@ function CheckCard({ check, showStatus = false, footer }: CheckCardProps) {
                 <div className="check-card-top">
                     <span className="check-card-eyebrow">
                         <i aria-hidden="true" />
-                        THIS WEEK&apos;S DROP
+                        {eyebrow}
                     </span>
                     <span className="check-card-sticker">{theme.sticker}</span>
                 </div>

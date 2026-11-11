@@ -1,11 +1,13 @@
 import './home.css';
 import { useEffect, useMemo, useState } from 'react';
 import api from '../../services/api';
-import CheckCard from '../../components/CheckCard';
+import CardCarousel from '../../components/CardCarousel';
 import EmptyState from '../../components/EmptyState';
 import CreateCheck from './CreateCheck';
+import CreateFunCard from './CreateFunCard';
+import FunCardsSection from './FunCardsSection';
 import type { ApiResponse } from '../../types/apiResponse';
-import type { Check } from '../../types/check';
+import type { AdminFunCard, Check } from '../../types/check';
 import { getErrorMessage } from '../../utils/apiError';
 import { mondayOptions } from '../../utils/weeks';
 
@@ -24,8 +26,9 @@ function Home() {
     const [deleteBusy, setDeleteBusy] = useState(false);
     const weeks = useMemo(() => mondayOptions(WEEKS_BACK, WEEKS_AHEAD), []);
     const [week, setWeek] = useState(() => weeks.find((w) => w.isCurrent)!.value);
-    // Which check the carousel is centred on.
-    const [slide, setSlide] = useState(0);
+    // The just-for-fun form: 'new', a card to edit, or closed. funReload refreshes its container after a save.
+    const [funForm, setFunForm] = useState<AdminFunCard | 'new' | null>(null);
+    const [funReload, setFunReload] = useState(0);
     const weekIndex = weeks.findIndex((w) => w.value === week);
     const isCurrentWeek = weeks[weekIndex]?.isCurrent ?? false;
 
@@ -45,7 +48,6 @@ function Home() {
             .then((res) => {
                 if (cancelled) return;
                 setChecks(res.data.data ?? []);
-                setSlide(0);
                 setError(null);
             })
             .catch((e) => {
@@ -90,6 +92,19 @@ function Home() {
                 onSaved={() => {
                     setForm(null);
                     retry();
+                }}
+            />
+        );
+    }
+
+    if (funForm !== null) {
+        return (
+            <CreateFunCard
+                card={funForm === 'new' ? undefined : funForm}
+                onBack={() => setFunForm(null)}
+                onSaved={() => {
+                    setFunForm(null);
+                    setFunReload((k) => k + 1);
                 }}
             />
         );
@@ -160,82 +175,23 @@ function Home() {
             )}
 
             {!loading && !error && checks.length > 0 && (
-                <div className="home-carousel">
-                    <button
-                        type="button"
-                        className="home-carousel-arrow"
-                        aria-label="Previous check"
-                        onClick={() => setSlide((i) => Math.max(0, i - 1))}
-                        disabled={slide <= 0}
-                    >
-                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                            <path d="M15 5l-7 7 7 7" />
-                        </svg>
-                    </button>
-                    <div className="home-carousel-viewport">
-                        <div className="home-carousel-track" style={{ '--slide': slide } as React.CSSProperties}>
-                            {checks.map((check, i) => (
-                                <div
-                                    className={`home-check${i === slide ? ' active' : ''}`}
-                                    key={check.id}
-                                    aria-hidden={i !== slide}
-                                    style={{ '--d': i - slide } as React.CSSProperties}
-                                    onClick={() => i !== slide && setSlide(i)}
-                                >
-                                    <CheckCard
-                                        check={check}
-                                        showStatus
-                                        footer={
-                                            <>
-                                                <button type="button" tabIndex={i === slide ? 0 : -1} onClick={() => setForm(check)}>Edit</button>
-                                                <button
-                                                    type="button"
-                                                    className="danger"
-                                                    tabIndex={i === slide ? 0 : -1}
-                                                    onClick={() => {
-                                                        setDeleteError(null);
-                                                        setDeleting(check);
-                                                    }}
-                                                >
-                                                    Delete
-                                                </button>
-                                            </>
-                                        }
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    <button
-                        type="button"
-                        className="home-carousel-arrow"
-                        aria-label="Next check"
-                        onClick={() => setSlide((i) => Math.min(checks.length - 1, i + 1))}
-                        disabled={slide >= checks.length - 1}
-                    >
-                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                            <path d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                </div>
-            )}
-
-            {!loading && !error && checks.length > 1 && (
-                <div className="home-dots" role="tablist" aria-label="Checks">
-                    {checks.map((check, i) => (
-                        <button
-                            type="button"
-                            role="tab"
-                            key={check.id}
-                            aria-selected={i === slide}
-                            aria-label={`Check ${i + 1} of ${checks.length}`}
-                            className={i === slide ? 'on' : ''}
-                            onClick={() => setSlide(i)}
-                        />
-                    ))}
-                </div>
+                <CardCarousel
+                    key={week}
+                    cards={checks}
+                    onEdit={setForm}
+                    onDelete={(check) => {
+                        setDeleteError(null);
+                        setDeleting(check);
+                    }}
+                />
             )}
           </section>
+
+            <FunCardsSection
+                reloadKey={funReload}
+                onAdd={() => setFunForm('new')}
+                onEdit={setFunForm}
+            />
 
             {deleting && (
                 <div className="confirm-backdrop" role="presentation">

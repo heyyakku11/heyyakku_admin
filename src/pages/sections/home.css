@@ -20,6 +20,11 @@
     font-weight: 600;
 }
 
+/* Stacked containers on the dashboard (weekly checks, just for fun) */
+.home-section > * + * {
+    margin-top: 24px;
+}
+
 /* The weekly checks container box */
 .home-box {
     --slide-w: clamp(200px, 17vw, 260px);
