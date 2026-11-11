@@ -216,9 +216,61 @@
 /* Check theme and live date sit on one row. */
 .cc-row {
     display: grid;
-    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr) auto;
     gap: 16px;
     align-items: start;
+}
+
+/* Active switch, level with the two dropdowns */
+.cc-field-active {
+    align-items: flex-start;
+}
+
+.cc-switch {
+    position: relative;
+    width: 52px;
+    height: 44px;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+.cc-switch::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 52px;
+    height: 24px;
+    border-radius: 12px;
+    background: #cbd0d8;
+    transition: background 0.18s;
+}
+
+.cc-switch.on::before {
+    background: var(--cc-text);
+}
+
+.cc-switch-knob {
+    position: absolute;
+    left: 3px;
+    top: 13px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    transition: transform 0.18s;
+}
+
+.cc-switch.on .cc-switch-knob {
+    transform: translateX(28px);
+}
+
+.cc-switch:focus-visible {
+    outline: 2px solid var(--cc-text);
+    outline-offset: 2px;
+    border-radius: 12px;
 }
 
 /* Theme dropdown with the create-theme button beside it */

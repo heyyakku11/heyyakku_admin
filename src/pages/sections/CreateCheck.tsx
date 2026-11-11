@@ -235,6 +235,21 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
                                 ))}
                             </select>
                         </div>
+
+                        <div className="cc-field cc-field-active">
+                            <span className="cc-label" id="cc-active-label">Active</span>
+                            <button
+                                type="button"
+                                role="switch"
+                                aria-checked={isActive}
+                                aria-labelledby="cc-active-label"
+                                title="Users can see it once its week starts."
+                                className={'cc-switch' + (isActive ? ' on' : '')}
+                                onClick={() => setIsActive((v) => !v)}
+                            >
+                                <span className="cc-switch-knob" />
+                            </button>
+                        </div>
                         </div>
 
                         <label className="cc-field">
@@ -281,14 +296,6 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
                                 </button>
                             )}
                         </div>
-
-                        <label className="cc-toggle">
-                            <input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />
-                            <span>
-                                <strong>Active</strong>
-                                <small>Users can see it once its week starts.</small>
-                            </span>
-                        </label>
                     </div>
 
                     {error && <p className="cc-error" role="alert">{error}</p>}
