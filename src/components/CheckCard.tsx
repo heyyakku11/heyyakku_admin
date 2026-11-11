@@ -35,9 +35,6 @@ function LockIcon() {
 }
 
 
-/** Every check card shows the same sticker; it is not configured per check type. */
-const CARD_STICKER = 'No filter, Just truth';
-
 function CheckCard({ check, showStatus = false, footer }: CheckCardProps) {
     const theme = resolveTheme(check);
     const showQuestion = check.question.trim() !== '' && check.question !== theme.heading;
@@ -71,7 +68,7 @@ function CheckCard({ check, showStatus = false, footer }: CheckCardProps) {
                         <i aria-hidden="true" />
                         THIS WEEK&apos;S DROP
                     </span>
-                    <span className="check-card-sticker">{CARD_STICKER}</span>
+                    <span className="check-card-sticker">{theme.sticker}</span>
                 </div>
 
                 <h3 className="check-card-title" title={theme.heading}>{theme.heading}</h3>

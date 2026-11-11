@@ -13,15 +13,17 @@ function hex(value: string | null | undefined, fallback: string): string {
  * The single place that turns a check's theme into what the card needs. Missing or malformed
  * optional properties fall back to safe defaults; legacy checks (no theme) use their own fields.
  */
-export function resolveTheme(check: Pick<Check, 'theme' | 'title' | 'backgroundColor' | 'sticker'>) {
+/** The sticker on every check card. It is fixed; the API no longer sends one. */
+export const CHECK_STICKER = 'No filter, Just truth';
+
+export function resolveTheme(check: Pick<Check, 'theme' | 'title' | 'backgroundColor'>) {
     const c: Partial<CheckThemeConfig> = check.theme?.config ?? {
         heading: check.title,
         backgroundColor: check.backgroundColor,
-        stickerLabel: check.sticker,
     };
     return {
         heading: (c.heading ?? '').trim(),
-        sticker: (c.stickerLabel ?? '').trim(),
+        sticker: CHECK_STICKER,
         background: hex(c.backgroundColor, DEFAULT_BACKGROUND),
         // The label color colors the heading; the question and options follow the shared defaults.
         headingColor: hex(c.labelColor, DEFAULT_INK),

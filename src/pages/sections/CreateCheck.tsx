@@ -90,7 +90,6 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
                   heading: selected.name,
                   backgroundColor: selected.backgroundColor,
                   labelColor: selected.labelColor,
-                  stickerLabel: selected.sticker,
               },
           }
         : check?.theme;
@@ -102,7 +101,6 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
         title: theme?.config.heading ?? '',
         question: question.trim() || 'Your question will appear here',
         backgroundColor: theme?.config.backgroundColor ?? '',
-        sticker: theme?.config.stickerLabel ?? '',
         theme,
         checkTypeId: typeId || null,
         isActive,

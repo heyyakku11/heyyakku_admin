@@ -8,7 +8,6 @@ export interface CheckThemeConfig {
     heading: string,
     backgroundColor: string,
     labelColor?: string | null,
-    stickerLabel?: string | null,
 }
 
 export interface CheckTheme {
@@ -24,7 +23,6 @@ export interface CheckThemeDefinition {
     name: string,
     backgroundColor: string,
     labelColor: string,
-    sticker?: string | null,
 }
 
 export interface Check {
@@ -34,7 +32,6 @@ export interface Check {
     title: string,
     question: string,
     backgroundColor: string,
-    sticker: string,
     isActive: boolean,
     status: string,
     options: CheckOption[],
