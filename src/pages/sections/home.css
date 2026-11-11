@@ -43,19 +43,17 @@
 .home-carousel-viewport {
     flex: 1;
     /* Just wide enough for the centred card and a peek of each neighbour. */
-    min-width: min(100%, calc(var(--slide-w) * 2.2 + var(--gap)));
+    min-width: min(100%, calc(var(--slide-w) * 1.9));
     overflow: hidden;
     padding: 12px 0 18px;
 }
 
+/* Stacked cards: all slides share one grid cell; each is offset, scaled and dimmed by its
+   distance --d from the active one, and layered so the active card sits on top. */
 .home-carousel-track {
-    display: flex;
-    gap: var(--gap);
+    display: grid;
+    justify-items: center;
     width: 100%;
-    box-sizing: border-box;
-    padding-inline: calc(50% - var(--slide-w) / 2);
-    transform: translateX(calc(var(--slide) * (var(--slide-w) + var(--gap)) * -1));
-    transition: transform 0.35s ease;
 }
 
 .home-carousel-arrow {
@@ -189,20 +187,22 @@
 }
 
 .home-check {
-    flex: 0 0 var(--slide-w);
+    --abs: max(var(--d), calc(var(--d) * -1));
+    grid-area: 1 / 1;
     width: var(--slide-w);
     display: flex;
     flex-direction: column;
     gap: 8px;
-    transform: scale(0.86);
-    opacity: 0.55;
-    transition: transform 0.35s ease, opacity 0.35s ease;
+    align-self: start;
+    transform: translateX(calc(var(--d) * 38%)) scale(calc(1 - var(--abs) * 0.12));
+    z-index: calc(10 - var(--abs));
+    opacity: calc(1 - var(--abs) * 0.45);
+    filter: brightness(calc(1 - var(--abs) * 0.12));
+    transition: transform 0.4s ease, opacity 0.4s ease, filter 0.4s ease;
     cursor: pointer;
 }
 
 .home-check.active {
-    transform: none;
-    opacity: 1;
     cursor: default;
 }
 

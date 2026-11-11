@@ -179,6 +179,7 @@ function Home() {
                                     className={`home-check${i === slide ? ' active' : ''}`}
                                     key={check.id}
                                     aria-hidden={i !== slide}
+                                    style={{ '--d': i - slide } as React.CSSProperties}
                                     onClick={() => i !== slide && setSlide(i)}
                                 >
                                     <CheckCard
