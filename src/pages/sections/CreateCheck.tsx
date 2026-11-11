@@ -318,11 +318,9 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
                     <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
                         <h3 id="confirm-title">{editing ? 'Confirm changes' : 'Confirm this check'}</h3>
                         <p className="confirm-week">
-                            This check will go live in the week starting <strong>{weekLabel}</strong> and will be {isActive ? 'active' : 'inactive'}. It cannot be reworded once anyone uses it.
+                            Goes live the week of <strong>{weekLabel}</strong>. {isActive ? 'Active' : 'Inactive'}.
+                            Can&apos;t be reworded once anyone uses it.
                         </p>
-                        <div className="confirm-card">
-                            <CheckCard check={preview} />
-                        </div>
                         <div className="cc-actions">
                             <button type="button" className="cc-btn" onClick={() => setConfirming(false)} disabled={submitting}>
                                 Edit

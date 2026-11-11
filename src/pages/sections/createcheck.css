@@ -546,7 +546,3 @@
     overflow-wrap: anywhere;
 }
 
-.confirm-card {
-    width: min(100%, 224px);
-    margin: 0 auto 16px;
-}
