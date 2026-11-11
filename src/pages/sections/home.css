@@ -20,12 +20,82 @@
     font-weight: 600;
 }
 
-.home-checks-row {
+/* The weekly checks container box */
+.home-box {
+    padding: 20px 24px 22px;
+    border: 1.5px solid #d1d5db;
+    border-radius: 20px;
+    background: #fff;
+}
+
+/* Carousel: the active card is centred, its neighbours peek out smaller. */
+.home-carousel {
     display: flex;
-    gap: 16px;
-    overflow-x: auto;
-    padding: 4px 4px 18px;
-    scroll-snap-type: x proximity;
+    align-items: center;
+    gap: 8px;
+}
+
+.home-carousel-viewport {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    padding: 12px 0 18px;
+}
+
+.home-carousel-track {
+    --slide-w: clamp(200px, 17vw, 260px);
+    --gap: 20px;
+    display: flex;
+    gap: var(--gap);
+    width: 100%;
+    box-sizing: border-box;
+    padding-inline: calc(50% - var(--slide-w) / 2);
+    transform: translateX(calc(var(--slide) * (var(--slide-w) + var(--gap)) * -1));
+    transition: transform 0.35s ease;
+}
+
+.home-carousel-arrow {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid #d1d5db;
+    border-radius: 50%;
+    background: #fff;
+    color: #111827;
+    cursor: pointer;
+}
+
+.home-carousel-arrow:hover:not(:disabled) {
+    background: #f3f4f6;
+}
+
+.home-carousel-arrow:disabled {
+    color: #d1d5db;
+    cursor: not-allowed;
+}
+
+.home-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.home-dots button {
+    width: 9px;
+    height: 9px;
+    padding: 0;
+    border: 1.5px solid #9ca3af;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+}
+
+.home-dots button.on {
+    border-color: #2563eb;
+    background: #60a5fa;
 }
 
 .home-note {
@@ -115,11 +185,21 @@
 }
 
 .home-check {
-    flex: 0 0 clamp(176px, 15.2vw, 240px);
-    width: clamp(176px, 15.2vw, 240px);
+    flex: 0 0 var(--slide-w);
+    width: var(--slide-w);
     display: flex;
     flex-direction: column;
     gap: 8px;
+    transform: scale(0.86);
+    opacity: 0.55;
+    transition: transform 0.35s ease, opacity 0.35s ease;
+    cursor: pointer;
+}
+
+.home-check.active {
+    transform: none;
+    opacity: 1;
+    cursor: default;
 }
 
 .home-check-badges {

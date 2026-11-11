@@ -24,6 +24,8 @@ function Home() {
     const [deleteBusy, setDeleteBusy] = useState(false);
     const weeks = useMemo(() => mondayOptions(WEEKS_BACK, WEEKS_AHEAD), []);
     const [week, setWeek] = useState(() => weeks.find((w) => w.isCurrent)!.value);
+    // Which check the carousel is centred on.
+    const [slide, setSlide] = useState(0);
     const weekIndex = weeks.findIndex((w) => w.value === week);
     const isCurrentWeek = weeks[weekIndex]?.isCurrent ?? false;
 
@@ -43,6 +45,7 @@ function Home() {
             .then((res) => {
                 if (cancelled) return;
                 setChecks(res.data.data ?? []);
+                setSlide(0);
                 setError(null);
             })
             .catch((e) => {
@@ -94,8 +97,9 @@ function Home() {
 
     return (
         <div className="home-section">
+          <section className="home-box" aria-label="Weekly active checks">
             <div className="home-heading">
-                <h2>{isCurrentWeek ? 'This week\'s checks' : 'Checks'}</h2>
+                <h2>{isCurrentWeek ? 'Weekly active checks' : 'Checks'}</h2>
                 {!loading && !error && <span className="home-count">{checks.length}</span>}
                 <button
                     type="button"
@@ -156,32 +160,81 @@ function Home() {
             )}
 
             {!loading && !error && checks.length > 0 && (
-                <div className="home-checks-row">
-                    {checks.map((check) => (
-                        <div className="home-check" key={check.id}>
-                            <CheckCard
-                                check={check}
-                                showStatus
-                                footer={
-                                    <>
-                                        <button type="button" onClick={() => setForm(check)}>Edit</button>
-                                        <button
-                                            type="button"
-                                            className="danger"
-                                            onClick={() => {
-                                                setDeleteError(null);
-                                                setDeleting(check);
-                                            }}
-                                        >
-                                            Delete
-                                        </button>
-                                    </>
-                                }
-                            />
+                <div className="home-carousel">
+                    <button
+                        type="button"
+                        className="home-carousel-arrow"
+                        aria-label="Previous check"
+                        onClick={() => setSlide((i) => Math.max(0, i - 1))}
+                        disabled={slide <= 0}
+                    >
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M15 5l-7 7 7 7" />
+                        </svg>
+                    </button>
+                    <div className="home-carousel-viewport">
+                        <div className="home-carousel-track" style={{ '--slide': slide } as React.CSSProperties}>
+                            {checks.map((check, i) => (
+                                <div
+                                    className={`home-check${i === slide ? ' active' : ''}`}
+                                    key={check.id}
+                                    aria-hidden={i !== slide}
+                                    onClick={() => i !== slide && setSlide(i)}
+                                >
+                                    <CheckCard
+                                        check={check}
+                                        showStatus
+                                        footer={
+                                            <>
+                                                <button type="button" tabIndex={i === slide ? 0 : -1} onClick={() => setForm(check)}>Edit</button>
+                                                <button
+                                                    type="button"
+                                                    className="danger"
+                                                    tabIndex={i === slide ? 0 : -1}
+                                                    onClick={() => {
+                                                        setDeleteError(null);
+                                                        setDeleting(check);
+                                                    }}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </>
+                                        }
+                                    />
+                                </div>
+                            ))}
                         </div>
+                    </div>
+                    <button
+                        type="button"
+                        className="home-carousel-arrow"
+                        aria-label="Next check"
+                        onClick={() => setSlide((i) => Math.min(checks.length - 1, i + 1))}
+                        disabled={slide >= checks.length - 1}
+                    >
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+                </div>
+            )}
+
+            {!loading && !error && checks.length > 1 && (
+                <div className="home-dots" role="tablist" aria-label="Checks">
+                    {checks.map((check, i) => (
+                        <button
+                            type="button"
+                            role="tab"
+                            key={check.id}
+                            aria-selected={i === slide}
+                            aria-label={`Check ${i + 1} of ${checks.length}`}
+                            className={i === slide ? 'on' : ''}
+                            onClick={() => setSlide(i)}
+                        />
                     ))}
                 </div>
             )}
+          </section>
 
             {deleting && (
                 <div className="confirm-backdrop" role="presentation">
