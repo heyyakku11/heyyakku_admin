@@ -22,10 +22,15 @@
 
 /* The weekly checks container box */
 .home-box {
+    --slide-w: clamp(200px, 17vw, 260px);
+    --gap: 20px;
+    width: fit-content;
+    max-width: 100%;
+    box-sizing: border-box;
     padding: 20px 24px 22px;
-    border: 1.5px solid #d1d5db;
     border-radius: 20px;
     background: #fff;
+    box-shadow: 0 4px 18px rgba(17, 24, 39, 0.08);
 }
 
 /* Carousel: the active card is centred, its neighbours peek out smaller. */
@@ -37,14 +42,13 @@
 
 .home-carousel-viewport {
     flex: 1;
-    min-width: 0;
+    /* Just wide enough for the centred card and a peek of each neighbour. */
+    min-width: min(100%, calc(var(--slide-w) * 2.2 + var(--gap)));
     overflow: hidden;
     padding: 12px 0 18px;
 }
 
 .home-carousel-track {
-    --slide-w: clamp(200px, 17vw, 260px);
-    --gap: 20px;
     display: flex;
     gap: var(--gap);
     width: 100%;
