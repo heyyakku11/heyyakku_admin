@@ -5,7 +5,6 @@ function Header() {
     // From the server-reported session held in memory; nothing here is read from browser storage.
     const profile = useAdminProfile();
     const email = profile?.email ?? "";
-    const role = profile?.role ?? "";
 
     const avatarCharacter = email
     ? email.charAt(0).toUpperCase()
@@ -21,10 +20,6 @@ function Header() {
     {avatarCharacter}
 </div>
 
-            <div className="profile-details">
-                <p className="profile-email">{email}</p>
-                <span className="profile-role">{role}</span>
-            </div>
         </div>
 
     </div>

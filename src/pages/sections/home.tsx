@@ -5,6 +5,7 @@ import CardCarousel from '../../components/CardCarousel';
 import EmptyState from '../../components/EmptyState';
 import CreateCheck from './CreateCheck';
 import CreateFunCard from './CreateFunCard';
+import CreateFunCardType from './CreateFunCardType';
 import FunCardsSection from './FunCardsSection';
 import type { ApiResponse } from '../../types/apiResponse';
 import type { Check } from '../../types/check';
@@ -25,6 +26,7 @@ function Home() {
     const [week, setWeek] = useState(() => weeks.find((w) => w.isCurrent)!.value);
     // The just-for-fun create form. funReload refreshes its container after a save.
     const [funCreating, setFunCreating] = useState(false);
+    const [funTypeCreating, setFunTypeCreating] = useState(false);
     const [funReload, setFunReload] = useState(0);
     const weekIndex = weeks.findIndex((w) => w.value === week);
     const isCurrentWeek = weeks[weekIndex]?.isCurrent ?? false;
@@ -84,6 +86,18 @@ function Home() {
                 onBack={() => setFunCreating(false)}
                 onSaved={() => {
                     setFunCreating(false);
+                    setFunReload((k) => k + 1);
+                }}
+            />
+        );
+    }
+
+    if (funTypeCreating) {
+        return (
+            <CreateFunCardType
+                onBack={() => setFunTypeCreating(false)}
+                onSaved={() => {
+                    setFunTypeCreating(false);
                     setFunReload((k) => k + 1);
                 }}
             />
@@ -165,6 +179,7 @@ function Home() {
             <FunCardsSection
                 reloadKey={funReload}
                 onAdd={() => setFunCreating(true)}
+                onAddType={() => setFunTypeCreating(true)}
             />
 
         </div>

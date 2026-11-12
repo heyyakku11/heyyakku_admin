@@ -9,12 +9,14 @@ import { funCardToCheck } from '../../utils/funCard';
 
 interface FunCardsSectionProps {
     onAdd: () => void;
+    /** Opens the form that defines a new card type. */
+    onAddType: () => void;
     /** Change it to make the section reload (for example after saving a card). */
     reloadKey: number;
 }
 
 /** The "Just for fun" container: every fun card type with its cards, in the same carousel as the weekly checks. */
-function FunCardsSection({ onAdd, reloadKey }: FunCardsSectionProps) {
+function FunCardsSection({ onAdd, onAddType, reloadKey }: FunCardsSectionProps) {
     const [groups, setGroups] = useState<FunCardGroup[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -64,6 +66,9 @@ function FunCardsSection({ onAdd, reloadKey }: FunCardsSectionProps) {
                         <path d="M21 12a9 9 0 1 1-2.64-6.36" />
                         <path d="M21 3v6h-6" />
                     </svg>
+                </button>
+                <button type="button" className="home-add" onClick={onAddType}>
+                    + Add type
                 </button>
                 <button type="button" className="home-add" onClick={onAdd}>
                     + Add card
