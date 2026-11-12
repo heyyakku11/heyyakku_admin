@@ -4,9 +4,12 @@
  * Why: the admin session is an HttpOnly cookie. If the browser called the backend's own domain directly, that cookie
  * would be third-party and browsers would not keep or send it. Calling /api on the admin app's own origin and
  * forwarding it here keeps the cookie first-party. The address comes from the environment, so nothing is hardcoded.
+ *
+ * vercel.json rewrites /api/<anything> to /api/proxy?__path=<anything>; this function rebuilds the real URL.
  */
 export const config = { runtime: 'edge' };
 
+const PATH_PARAM = '__path';
 const HOP_BY_HOP = ['host', 'connection', 'keep-alive', 'transfer-encoding', 'upgrade', 'te', 'trailer'];
 
 export default async function handler(request: Request): Promise<Response> {
@@ -16,14 +19,19 @@ export default async function handler(request: Request): Promise<Response> {
     }
 
     const incoming = new URL(request.url);
-    // Only /api/* is ever forwarded, and the host always comes from the environment, never from the request.
-    if (!incoming.pathname.startsWith('/api/')) {
+    const rawPath = incoming.searchParams.get(PATH_PARAM) ?? '';
+    const segments = rawPath.split('/').filter((segment) => segment.length > 0);
+    // Only /api/<segments> is ever forwarded; no way to climb out of it, and the host always comes from the environment.
+    if (segments.length === 0 || segments.some((segment) => segment === '.' || segment === '..')) {
         return json(404, 'Not found.');
     }
 
+    incoming.searchParams.delete(PATH_PARAM);
+    const query = incoming.searchParams.toString();
+
     let target: URL;
     try {
-        target = new URL(incoming.pathname + incoming.search, base);
+        target = new URL(`/api/${segments.map(encodeURIComponent).join('/')}${query ? `?${query}` : ''}`, base);
     } catch {
         return json(502, 'The API address is invalid.');
     }
