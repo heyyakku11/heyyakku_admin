@@ -1,4 +1,4 @@
-import type { Check, CheckThemeConfig } from '../types/check';
+import type { Check } from '../types/check';
 
 const DEFAULT_BACKGROUND = '#FFF9F6';
 const DEFAULT_INK = '#21191D';
@@ -9,24 +9,20 @@ function hex(value: string | null | undefined, fallback: string): string {
     return value && HEX.test(value.trim()) ? value.trim() : fallback;
 }
 
-/**
- * The single place that turns a check's theme into what the card needs. Missing or malformed
- * optional properties fall back to safe defaults; legacy checks (no theme) use their own fields.
- */
 /** The sticker on every check card. It is fixed; the API no longer sends one. */
 export const CHECK_STICKER = 'No filter, Just truth';
 
-export function resolveTheme(check: Pick<Check, 'theme' | 'title' | 'backgroundColor'>) {
-    const c: Partial<CheckThemeConfig> = check.theme?.config ?? {
-        heading: check.title,
-        backgroundColor: check.backgroundColor,
-    };
+/**
+ * The single place that turns a card's colors into what the card needs. A check or fun card carries its type name
+ * (title), backgroundColor and labelColor; a missing or malformed color falls back to a safe default.
+ */
+export function resolveTheme(check: Pick<Check, 'title' | 'backgroundColor' | 'labelColor'>) {
     return {
-        heading: (c.heading ?? '').trim(),
+        heading: (check.title ?? '').trim(),
         sticker: CHECK_STICKER,
-        background: hex(c.backgroundColor, DEFAULT_BACKGROUND),
+        background: hex(check.backgroundColor, DEFAULT_BACKGROUND),
         // The label color colors the heading; the question and options follow the shared defaults.
-        headingColor: hex(c.labelColor, DEFAULT_INK),
+        headingColor: hex(check.labelColor, DEFAULT_INK),
         questionColor: DEFAULT_INK,
         accent: DEFAULT_ACCENT,
         stickerColor: DEFAULT_ACCENT,

@@ -39,7 +39,8 @@ function LockIcon() {
 
 function CheckCard({ check, showStatus = false, footer, eyebrow = 'THIS WEEK\'S DROP' }: CheckCardProps) {
     const theme = resolveTheme(check);
-    const showQuestion = check.question.trim() !== '' && check.question !== theme.heading;
+    const question = check.question ?? '';
+    const showQuestion = question.trim() !== '' && question !== theme.heading;
     const letter = (i: number) => String.fromCharCode(65 + i);
 
     return (

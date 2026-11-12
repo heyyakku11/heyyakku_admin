@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import api from '../../services/api';
 import BackButton from '../../components/BackButton';
 import CheckCard from '../../components/CheckCard';
-import type { Check, CheckTheme, CheckThemeDefinition } from '../../types/check';
+import type { Check, CheckThemeDefinition } from '../../types/check';
 import type { ApiResponse } from '../../types/apiResponse';
 import { getErrorMessage } from '../../utils/apiError';
 import { mondayOptions } from '../../utils/weeks';
@@ -13,38 +13,22 @@ const MAX_OPTIONS = 3;
 const WEEKS_AHEAD = 12;
 
 interface CreateCheckProps {
-    /** The check being edited; omit to create a new one. */
-    check?: Check;
     onBack: () => void;
     onSaved: () => void;
 }
 
-function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
-    const editing = check !== undefined;
-    // Legacy checks have no theme; they stay legacy unless the admin picks one.
-    const [typeId, setTypeId] = useState<string>(check?.checkTypeId ?? '');
+function CreateCheck({ onBack, onSaved }: CreateCheckProps) {
+    const [typeId, setTypeId] = useState<string>('');
     const [themes, setThemes] = useState<CheckThemeDefinition[]>([]);
     const [themesError, setThemesError] = useState<string | null>(null);
     const [themesLoading, setThemesLoading] = useState(true);
     const [themesReload, setThemesReload] = useState(0);
-    const [question, setQuestion] = useState(check?.question ?? '');
-    const [options, setOptions] = useState<string[]>(check ? check.options.map((o) => o.text) : ['', '']);
-    const [isActive, setIsActive] = useState(check?.isActive ?? true);
+    const [question, setQuestion] = useState('');
+    const [options, setOptions] = useState<string[]>(['', '']);
+    const [isActive, setIsActive] = useState(true);
 
-    const mondays = useMemo(() => {
-        const upcoming = mondayOptions(0, WEEKS_AHEAD);
-        // An existing check may sit in a past week; keep that week selectable.
-        if (check && !upcoming.some((m) => m.value === check.weekStart)) {
-            const label = new Date(`${check.weekStart}T00:00:00`).toLocaleDateString('en-IN', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric',
-            });
-            return [{ value: check.weekStart, label, isCurrent: false }, ...upcoming];
-        }
-        return upcoming;
-    }, [check]);
-    const [weekStart, setWeekStart] = useState(check?.weekStart ?? mondays[0].value);
+    const mondays = useMemo(() => mondayOptions(0, WEEKS_AHEAD), []);
+    const [weekStart, setWeekStart] = useState(mondays[0].value);
     const [submitting, setSubmitting] = useState(false);
     const [confirming, setConfirming] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -61,10 +45,7 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
                 const list = res.data.data ?? [];
                 setThemes(list);
                 setThemesError(null);
-                setTypeId((current) => {
-                    if (current && list.some((t) => t.id === current)) return current;
-                    return check ? current : (list[0]?.id ?? '');
-                });
+                setTypeId((current) => (current && list.some((t) => t.id === current) ? current : (list[0]?.id ?? '')));
             })
             .catch((e) => {
                 if (!cancelled) setThemesError(getErrorMessage(e));
@@ -75,34 +56,19 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
         return () => {
             cancelled = true;
         };
-    }, [check, themesReload]);
+    }, [themesReload]);
 
     const selected = themes.find((t) => t.id === typeId);
     const noThemes = !themesLoading && !themesError && themes.length === 0;
-
-    // A legacy check with no theme keeps previewing its own derived theme until one is picked.
-    const theme: CheckTheme | undefined = selected
-        ? {
-              checkTypeId: selected.id,
-              checkType: selected.name,
-              isLegacy: false,
-              config: {
-                  heading: selected.name,
-                  backgroundColor: selected.backgroundColor,
-                  labelColor: selected.labelColor,
-              },
-          }
-        : check?.theme;
 
     // Fills the card with placeholders until the admin has typed something.
     const preview: Check = {
         id: 'preview',
         weekStart,
-        title: theme?.config.heading ?? '',
+        title: selected?.name ?? '',
         question: question.trim() || 'Your question will appear here',
-        backgroundColor: theme?.config.backgroundColor ?? '',
-        theme,
-        checkTypeId: typeId || null,
+        backgroundColor: selected?.backgroundColor ?? '',
+        labelColor: selected?.labelColor,
         isActive,
         status: 'upcoming',
         options: options.map((text, i) => ({
@@ -113,7 +79,7 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
 
     function problem(): string | null {
         if (noThemes) return 'No check themes are available yet.';
-        if (!editing && !typeId) return 'Pick a check theme.';
+        if (!typeId) return 'Pick a check theme.';
         if (!question.trim()) return 'Question is required.';
         if (question.trim().length > 500) return 'Question must be at most 500 characters.';
         if (!weekStart) return 'Pick the week this check goes live.';
@@ -150,16 +116,12 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
             // No visual fields are sent: the backend applies the chosen theme.
             const body = {
                 weekStart,
-                checkTypeId: typeId || undefined,
+                checkTypeId: typeId,
                 question: question.trim(),
                 options: trimmedOptions,
                 isActive,
             };
-            if (check) {
-                await api.put(`/api/v1/yakku/checks/${check.id}`, body);
-            } else {
-                await api.post('/api/v1/yakku/checks', body);
-            }
+            await api.post('/api/v1/yakku/checks', body);
             onSaved();
         } catch (err) {
             setConfirming(false);
@@ -173,7 +135,7 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
             <header className="cc-header">
                 <BackButton onClick={onBack} disabled={submitting} />
                 <div>
-                    <h2>{editing ? 'Edit check' : 'Create check'}</h2>
+                    <h2>Create check</h2>
                     <p>Pick a theme, write the question and choose when it goes live.</p>
                 </div>
             </header>
@@ -193,8 +155,7 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
                                 >
                                     {themesLoading && <option value="">Loading themes…</option>}
                                     {!themesLoading && themes.length === 0 && <option value="">No themes available</option>}
-                                    {!themesLoading && themes.length > 0 && !typeId && <option value="">Legacy (no theme)</option>}
-                                    {themes.map((t) => (
+                                                                        {themes.map((t) => (
                                         <option key={t.id} value={t.id}>{t.name}</option>
                                     ))}
                                 </select>
@@ -219,9 +180,6 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
                                         Retry
                                     </button>
                                 </div>
-                            )}
-                            {editing && !check?.checkTypeId && !noThemes && (
-                                <p className="cc-help">This is a legacy check. Pick a theme to move it to the theme system.</p>
                             )}
                         </div>
 
@@ -299,7 +257,7 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
                     {error && <p className="cc-error" role="alert">{error}</p>}
 
                     <button type="submit" className="cc-btn cc-btn-primary cc-submit" disabled={submitting}>
-                        {editing ? 'Save changes' : 'Create check'}
+                        Create check
                     </button>
                 </form>
 
@@ -314,7 +272,7 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
             {confirming && (
                 <div className="confirm-backdrop" role="presentation">
                     <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
-                        <h3 id="confirm-title">{editing ? 'Confirm changes' : 'Confirm this check'}</h3>
+                        <h3 id="confirm-title">Confirm this check</h3>
                         <p className="confirm-week">
                             Goes live the week of <strong>{weekLabel}</strong>. {isActive ? 'Active' : 'Inactive'}.
                             Can&apos;t be reworded once anyone uses it.
@@ -324,7 +282,7 @@ function CreateCheck({ check, onBack, onSaved }: CreateCheckProps) {
                                 Edit
                             </button>
                             <button type="button" className="cc-btn cc-btn-primary" onClick={submit} disabled={submitting}>
-                                {submitting ? 'Saving…' : editing ? 'Confirm & save' : 'Confirm & create'}
+                                {submitting ? 'Saving…' : 'Confirm & create'}
                             </button>
                         </div>
                     </div>

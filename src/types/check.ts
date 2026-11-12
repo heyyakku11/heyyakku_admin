@@ -3,20 +3,6 @@ export interface CheckOption {
     text: string,
 }
 
-/** What a check renders with. The type name is the heading; everything else is optional on other clients. */
-export interface CheckThemeConfig {
-    heading: string,
-    backgroundColor: string,
-    labelColor?: string | null,
-}
-
-export interface CheckTheme {
-    checkTypeId?: string | null,
-    checkType?: string | null,
-    isLegacy: boolean,
-    config: CheckThemeConfig,
-}
-
 /** A theme defined by an admin (GET /api/v1/yakku/check-themes). Its name is the check type and the heading. */
 export interface CheckThemeDefinition {
     id: string,
@@ -29,26 +15,37 @@ export interface CheckThemeDefinition {
 export interface Check {
     id: string,
     weekStart: string,
-    /** Legacy snapshot fields; the card renders from `theme` when it is present. */
+    /** The check type name; shown as the card heading. */
     title: string,
     question: string,
     backgroundColor: string,
+    /** Color of the heading text; sent by the checks list. */
+    labelColor?: string | null,
     isActive: boolean,
     status: string,
     options: CheckOption[],
-    checkType?: string | null,
-    checkTypeId?: string | null,
-    theme?: CheckTheme,
 }
 
-/** A just-for-fun card (GET /api/v1/yakku/fun-cards): no live week, always styled with the Just for fun theme. */
-export interface AdminFunCard {
-    id: string,
-    title: string,
-    question: string,
+/** The fun card type (theme) of a group in GET /api/v1/yakku/fun-cards. */
+export interface FunCardGroupTheme {
+    funCardTypeId: string,
+    heading: string,
     backgroundColor: string,
-    isActive: boolean,
+    labelColor: string,
+    tag?: string | null,
+}
+
+/** One card inside a group; its look comes from the group's theme. */
+export interface FunCardItem {
+    id: string,
+    question: string,
     options: CheckOption[],
-    theme?: CheckTheme,
+    isActive: boolean,
     createdAt: string,
+}
+
+/** GET /api/v1/yakku/fun-cards: every fun card type with its cards. */
+export interface FunCardGroup {
+    theme: FunCardGroupTheme,
+    cards: FunCardItem[],
 }

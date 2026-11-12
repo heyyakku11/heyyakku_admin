@@ -8,8 +8,9 @@ interface CardCarouselProps {
     noun?: string;
     /** Eyebrow pill text on each card; defaults to the weekly check one. */
     eyebrow?: string;
-    onEdit: (card: Check) => void;
-    onDelete: (card: Check) => void;
+    /** Buttons are shown only when the matching handler is given. */
+    onEdit?: (card: Check) => void;
+    onDelete?: (card: Check) => void;
 }
 
 /**
@@ -50,17 +51,23 @@ function CardCarousel({ cards, noun = 'check', eyebrow, onEdit, onDelete }: Card
                                     showStatus
                                     eyebrow={eyebrow}
                                     footer={
-                                        <>
-                                            <button type="button" tabIndex={i === slide ? 0 : -1} onClick={() => onEdit(card)}>Edit</button>
-                                            <button
-                                                type="button"
-                                                className="danger"
-                                                tabIndex={i === slide ? 0 : -1}
-                                                onClick={() => onDelete(card)}
-                                            >
-                                                Delete
-                                            </button>
-                                        </>
+                                        onEdit || onDelete ? (
+                                            <>
+                                                {onEdit && (
+                                                    <button type="button" tabIndex={i === slide ? 0 : -1} onClick={() => onEdit(card)}>Edit</button>
+                                                )}
+                                                {onDelete && (
+                                                    <button
+                                                        type="button"
+                                                        className="danger"
+                                                        tabIndex={i === slide ? 0 : -1}
+                                                        onClick={() => onDelete(card)}
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                )}
+                                            </>
+                                        ) : undefined
                                     }
                                 />
                             </div>

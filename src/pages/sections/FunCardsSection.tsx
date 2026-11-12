@@ -3,33 +3,29 @@ import api from '../../services/api';
 import CardCarousel from '../../components/CardCarousel';
 import EmptyState from '../../components/EmptyState';
 import type { ApiResponse } from '../../types/apiResponse';
-import type { AdminFunCard, Check } from '../../types/check';
+import type { FunCardGroup } from '../../types/check';
 import { getErrorMessage } from '../../utils/apiError';
 import { funCardToCheck } from '../../utils/funCard';
 
 interface FunCardsSectionProps {
     onAdd: () => void;
-    onEdit: (card: AdminFunCard) => void;
     /** Change it to make the section reload (for example after saving a card). */
     reloadKey: number;
 }
 
-/** The "Just for fun" container: system-made cards with no live date, in the same carousel as the weekly checks. */
-function FunCardsSection({ onAdd, onEdit, reloadKey }: FunCardsSectionProps) {
-    const [cards, setCards] = useState<AdminFunCard[]>([]);
+/** The "Just for fun" container: every fun card type with its cards, in the same carousel as the weekly checks. */
+function FunCardsSection({ onAdd, reloadKey }: FunCardsSectionProps) {
+    const [groups, setGroups] = useState<FunCardGroup[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [localReload, setLocalReload] = useState(0);
-    const [deleting, setDeleting] = useState<AdminFunCard | null>(null);
-    const [deleteError, setDeleteError] = useState<string | null>(null);
-    const [deleteBusy, setDeleteBusy] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
-        api.get<ApiResponse<AdminFunCard[]>>('/api/v1/yakku/fun-cards')
+        api.get<ApiResponse<FunCardGroup[]>>('/api/v1/yakku/fun-cards')
             .then((res) => {
                 if (cancelled) return;
-                setCards(res.data.data ?? []);
+                setGroups(res.data.data ?? []);
                 setError(null);
             })
             .catch((e) => {
@@ -49,29 +45,13 @@ function FunCardsSection({ onAdd, onEdit, reloadKey }: FunCardsSectionProps) {
         setLocalReload((k) => k + 1);
     }, []);
 
-    async function confirmDelete() {
-        if (!deleting || deleteBusy) return;
-        setDeleteBusy(true);
-        setDeleteError(null);
-        try {
-            await api.delete(`/api/v1/yakku/fun-cards/${deleting.id}`);
-            setDeleting(null);
-            retry();
-        } catch (e) {
-            setDeleteError(getErrorMessage(e));
-        } finally {
-            setDeleteBusy(false);
-        }
-    }
-
-    const byId = new Map(cards.map((card) => [card.id, card]));
-    const items: Check[] = cards.map(funCardToCheck);
+    const total = groups.reduce((sum, group) => sum + group.cards.length, 0);
 
     return (
         <section className="home-box" aria-label="Just for fun cards">
             <div className="home-heading">
                 <h2>Just for fun</h2>
-                {!loading && !error && <span className="home-count">{cards.length}</span>}
+                {!loading && !error && <span className="home-count">{total}</span>}
                 <button
                     type="button"
                     className={`home-refresh${loading ? ' spinning' : ''}`}
@@ -98,48 +78,20 @@ function FunCardsSection({ onAdd, onEdit, reloadKey }: FunCardsSectionProps) {
                 </p>
             )}
 
-            {!loading && !error && cards.length === 0 && (
+            {!loading && !error && total === 0 && (
                 <EmptyState message="No just-for-fun cards yet. Add the first one." />
             )}
 
-            {!loading && !error && cards.length > 0 && (
-                <CardCarousel
-                    cards={items}
-                    noun="card"
-                    eyebrow="JUST FOR FUN"
-                    onEdit={(card) => {
-                        const found = byId.get(card.id);
-                        if (found) onEdit(found);
-                    }}
-                    onDelete={(card) => {
-                        const found = byId.get(card.id);
-                        if (!found) return;
-                        setDeleteError(null);
-                        setDeleting(found);
-                    }}
-                />
-            )}
-
-            {deleting && (
-                <div className="confirm-backdrop" role="presentation">
-                    <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-fun-title">
-                        <h3 id="delete-fun-title">Delete this card?</h3>
-                        <p className="confirm-week">
-                            "{deleting.question}" will be removed permanently. A card that users have already
-                            made cannot be deleted; make it inactive instead.
-                        </p>
-                        {deleteError && <p className="cc-error" role="alert">{deleteError}</p>}
-                        <div className="cc-actions">
-                            <button type="button" className="cc-btn" onClick={() => setDeleting(null)} disabled={deleteBusy}>
-                                Cancel
-                            </button>
-                            <button type="button" className="cc-btn cc-btn-primary" onClick={confirmDelete} disabled={deleteBusy}>
-                                {deleteBusy ? 'Deleting…' : 'Delete'}
-                            </button>
-                        </div>
-                    </div>
+            {!loading && !error && groups.filter((group) => group.cards.length > 0).map((group) => (
+                <div key={group.theme.funCardTypeId}>
+                    <h3 className="home-subheading">{group.theme.heading}</h3>
+                    <CardCarousel
+                        cards={group.cards.map((card) => funCardToCheck(card, group.theme))}
+                        noun="card"
+                        eyebrow="JUST FOR FUN"
+                    />
                 </div>
-            )}
+            ))}
         </section>
     );
 }

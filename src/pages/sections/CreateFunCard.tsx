@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import api from '../../services/api';
 import BackButton from '../../components/BackButton';
 import CheckCard from '../../components/CheckCard';
-import type { AdminFunCard, Check, CheckThemeDefinition } from '../../types/check';
+import type { Check, CheckThemeDefinition } from '../../types/check';
 import type { ApiResponse } from '../../types/apiResponse';
 import { getErrorMessage } from '../../utils/apiError';
 
@@ -11,24 +11,23 @@ const MIN_OPTIONS = 2;
 const MAX_OPTIONS = 3;
 
 interface CreateFunCardProps {
-    /** The card being edited; omit to create a new one. */
-    card?: AdminFunCard;
     onBack: () => void;
     onSaved: () => void;
 }
 
 /**
- * Create or edit a just-for-fun card. Same flow as a check (write the question and options, preview, confirm),
- * but there is no theme to pick and no live date: every fun card uses the Just for fun theme.
+ * Create a just-for-fun card. Same flow as a check (pick the card type, write the question and options, preview,
+ * confirm), but there is no live date: a fun card is always available while it is active.
  */
-function CreateFunCard({ card, onBack, onSaved }: CreateFunCardProps) {
-    const editing = card !== undefined;
-    const [theme, setTheme] = useState<CheckThemeDefinition | null>(null);
+function CreateFunCard({ onBack, onSaved }: CreateFunCardProps) {
+    const [themes, setThemes] = useState<CheckThemeDefinition[]>([]);
+    const [typeId, setTypeId] = useState('');
+    const [themesLoading, setThemesLoading] = useState(true);
     const [themeError, setThemeError] = useState<string | null>(null);
     const [themeReload, setThemeReload] = useState(0);
-    const [question, setQuestion] = useState(card?.question ?? '');
-    const [options, setOptions] = useState<string[]>(card ? card.options.map((o) => o.text) : ['', '']);
-    const [isActive, setIsActive] = useState(card?.isActive ?? true);
+    const [question, setQuestion] = useState('');
+    const [options, setOptions] = useState<string[]>(['', '']);
+    const [isActive, setIsActive] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [confirming, setConfirming] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -37,19 +36,26 @@ function CreateFunCard({ card, onBack, onSaved }: CreateFunCardProps) {
 
     useEffect(() => {
         let cancelled = false;
-        api.get<ApiResponse<CheckThemeDefinition>>('/api/v1/yakku/fun-cards/theme')
+        api.get<ApiResponse<CheckThemeDefinition[]>>('/api/v1/yakku/fun-cards/themes')
             .then((res) => {
                 if (cancelled) return;
-                setTheme(res.data.data ?? null);
+                const list = res.data.data ?? [];
+                setThemes(list);
+                setTypeId((current) => current || list[0]?.id || '');
                 setThemeError(null);
             })
             .catch((e) => {
                 if (!cancelled) setThemeError(getErrorMessage(e));
+            })
+            .finally(() => {
+                if (!cancelled) setThemesLoading(false);
             });
         return () => {
             cancelled = true;
         };
     }, [themeReload]);
+
+    const theme = themes.find((t) => t.id === typeId) ?? null;
 
     // Fills the card with placeholders until the admin has typed something.
     const preview: Check = {
@@ -58,14 +64,7 @@ function CreateFunCard({ card, onBack, onSaved }: CreateFunCardProps) {
         title: theme?.name ?? '',
         question: question.trim() || 'Your question will appear here',
         backgroundColor: theme?.backgroundColor ?? '',
-        theme: theme
-            ? {
-                  checkTypeId: theme.id,
-                  checkType: theme.name,
-                  isLegacy: false,
-                  config: { heading: theme.name, backgroundColor: theme.backgroundColor, labelColor: theme.labelColor },
-              }
-            : card?.theme,
+        labelColor: theme?.labelColor,
         isActive,
         status: 'live',
         options: options.map((text, i) => ({
@@ -75,6 +74,7 @@ function CreateFunCard({ card, onBack, onSaved }: CreateFunCardProps) {
     };
 
     function problem(): string | null {
+        if (!typeId) return 'Pick a card type.';
         if (!question.trim()) return 'Question is required.';
         if (question.trim().length > 500) return 'Question must be at most 500 characters.';
         if (trimmedOptions.some((o) => !o)) return 'Fill in every option, or remove the empty one.';
@@ -107,13 +107,13 @@ function CreateFunCard({ card, onBack, onSaved }: CreateFunCardProps) {
         setSubmitting(true);
         setError(null);
         try {
-            // No visual fields are sent: the backend applies the just-for-fun theme.
-            const body = { question: question.trim(), options: trimmedOptions, isActive };
-            if (card) {
-                await api.put(`/api/v1/yakku/fun-cards/${card.id}`, body);
-            } else {
-                await api.post('/api/v1/yakku/fun-cards', body);
-            }
+            // No visual fields are sent: the backend applies the chosen card type's look.
+            await api.post('/api/v1/yakku/fun-cards', {
+                funCardTypeId: typeId,
+                question: question.trim(),
+                options: trimmedOptions,
+                isActive,
+            });
             onSaved();
         } catch (err) {
             setConfirming(false);
@@ -127,8 +127,8 @@ function CreateFunCard({ card, onBack, onSaved }: CreateFunCardProps) {
             <header className="cc-header">
                 <BackButton onClick={onBack} disabled={submitting} />
                 <div>
-                    <h2>{editing ? 'Edit card' : 'Create card'}</h2>
-                    <p>Write the question and its options. It joins the Just for fun cards, with no live or end date.</p>
+                    <h2>Create card</h2>
+                    <p>Pick a card type, then write the question and its options. It joins the Just for fun cards, with no live or end date.</p>
                 </div>
             </header>
 
@@ -137,10 +137,20 @@ function CreateFunCard({ card, onBack, onSaved }: CreateFunCardProps) {
                     <div className="cc-card">
                         <div className="cc-row">
                             <div className="cc-field">
-                                <span className="cc-label">Card theme</span>
-                                <p className="cc-help">
-                                    {theme ? `${theme.name}${theme.tag ? ` · ${theme.tag}` : ''}` : 'Loading theme…'}
-                                </p>
+                                <label className="cc-label" htmlFor="cc-fun-type">Card type</label>
+                                <select
+                                    id="cc-fun-type"
+                                    value={typeId}
+                                    onChange={(e) => setTypeId(e.target.value)}
+                                    disabled={themesLoading || themes.length === 0 || submitting}
+                                >
+                                    {themesLoading && <option value="">Loading types…</option>}
+                                    {!themesLoading && themes.length === 0 && <option value="">No card types available</option>}
+                                    {themes.map((t) => (
+                                        <option key={t.id} value={t.id}>{t.name}</option>
+                                    ))}
+                                </select>
+                                {theme?.tag && <p className="cc-help">{theme.tag}</p>}
                                 {themeError && (
                                     <div className="cc-alert" role="alert">
                                         <span>{themeError}</span>
@@ -216,7 +226,7 @@ function CreateFunCard({ card, onBack, onSaved }: CreateFunCardProps) {
                     {error && <p className="cc-error" role="alert">{error}</p>}
 
                     <button type="submit" className="cc-btn cc-btn-primary cc-submit" disabled={submitting}>
-                        {editing ? 'Save changes' : 'Create card'}
+                        Create card
                     </button>
                 </form>
 
@@ -231,17 +241,17 @@ function CreateFunCard({ card, onBack, onSaved }: CreateFunCardProps) {
             {confirming && (
                 <div className="confirm-backdrop" role="presentation">
                     <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
-                        <h3 id="confirm-title">{editing ? 'Confirm changes' : 'Confirm this card'}</h3>
+                        <h3 id="confirm-title">Confirm this card</h3>
                         <p className="confirm-week">
-                            Added to Just for fun, no live date. {isActive ? 'Active' : 'Inactive'}.
-                            Can&apos;t be reworded once anyone uses it.
+                            Added to Just for fun{theme ? ` (${theme.name})` : ''}, no live date. {isActive ? 'Active' : 'Inactive'}.
+                            It can&apos;t be changed after you create it.
                         </p>
                         <div className="cc-actions">
                             <button type="button" className="cc-btn" onClick={() => setConfirming(false)} disabled={submitting}>
                                 Edit
                             </button>
                             <button type="button" className="cc-btn cc-btn-primary" onClick={submit} disabled={submitting}>
-                                {submitting ? 'Saving…' : editing ? 'Confirm & save' : 'Confirm & create'}
+                                {submitting ? 'Saving…' : 'Confirm & create'}
                             </button>
                         </div>
                     </div>

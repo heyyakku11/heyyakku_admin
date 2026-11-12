@@ -7,7 +7,7 @@ import CreateCheck from './CreateCheck';
 import CreateFunCard from './CreateFunCard';
 import FunCardsSection from './FunCardsSection';
 import type { ApiResponse } from '../../types/apiResponse';
-import type { AdminFunCard, Check } from '../../types/check';
+import type { Check } from '../../types/check';
 import { getErrorMessage } from '../../utils/apiError';
 import { mondayOptions } from '../../utils/weeks';
 
@@ -19,15 +19,12 @@ function Home() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [reloadKey, setReloadKey] = useState(0);
-    // null = the list, 'new' = the create form, a check = the edit form for it.
-    const [form, setForm] = useState<Check | 'new' | null>(null);
-    const [deleting, setDeleting] = useState<Check | null>(null);
-    const [deleteError, setDeleteError] = useState<string | null>(null);
-    const [deleteBusy, setDeleteBusy] = useState(false);
+    // false = the list, true = the create check form.
+    const [creating, setCreating] = useState(false);
     const weeks = useMemo(() => mondayOptions(WEEKS_BACK, WEEKS_AHEAD), []);
     const [week, setWeek] = useState(() => weeks.find((w) => w.isCurrent)!.value);
-    // The just-for-fun form: 'new', a card to edit, or closed. funReload refreshes its container after a save.
-    const [funForm, setFunForm] = useState<AdminFunCard | 'new' | null>(null);
+    // The just-for-fun create form. funReload refreshes its container after a save.
+    const [funCreating, setFunCreating] = useState(false);
     const [funReload, setFunReload] = useState(0);
     const weekIndex = weeks.findIndex((w) => w.value === week);
     const isCurrentWeek = weeks[weekIndex]?.isCurrent ?? false;
@@ -68,42 +65,25 @@ function Home() {
         setReloadKey((k) => k + 1);
     }
 
-    async function confirmDelete() {
-        if (!deleting || deleteBusy) return;
-        setDeleteBusy(true);
-        setDeleteError(null);
-        try {
-            await api.delete(`/api/v1/yakku/checks/${deleting.id}`);
-            setDeleting(null);
-            retry();
-        } catch (e) {
-            setDeleteError(getErrorMessage(e));
-        } finally {
-            setDeleteBusy(false);
-        }
-    }
-
     // A one-deep navigation stack: the checks list, with the form pushed on top.
-    if (form !== null) {
+    if (creating) {
         return (
             <CreateCheck
-                check={form === 'new' ? undefined : form}
-                onBack={() => setForm(null)}
+                onBack={() => setCreating(false)}
                 onSaved={() => {
-                    setForm(null);
+                    setCreating(false);
                     retry();
                 }}
             />
         );
     }
 
-    if (funForm !== null) {
+    if (funCreating) {
         return (
             <CreateFunCard
-                card={funForm === 'new' ? undefined : funForm}
-                onBack={() => setFunForm(null)}
+                onBack={() => setFunCreating(false)}
                 onSaved={() => {
-                    setFunForm(null);
+                    setFunCreating(false);
                     setFunReload((k) => k + 1);
                 }}
             />
@@ -157,7 +137,7 @@ function Home() {
                         </svg>
                     </button>
                 </div>
-                <button type="button" className="home-add" onClick={() => setForm('new')}>
+                <button type="button" className="home-add" onClick={() => setCreating(true)}>
                     + Add check
                 </button>
             </div>
@@ -178,41 +158,15 @@ function Home() {
                 <CardCarousel
                     key={week}
                     cards={checks}
-                    onEdit={setForm}
-                    onDelete={(check) => {
-                        setDeleteError(null);
-                        setDeleting(check);
-                    }}
                 />
             )}
           </section>
 
             <FunCardsSection
                 reloadKey={funReload}
-                onAdd={() => setFunForm('new')}
-                onEdit={setFunForm}
+                onAdd={() => setFunCreating(true)}
             />
 
-            {deleting && (
-                <div className="confirm-backdrop" role="presentation">
-                    <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-title">
-                        <h3 id="delete-title">Delete this check?</h3>
-                        <p className="confirm-week">
-                            "{deleting.title}" will be removed permanently. A check that users have already
-                            answered cannot be deleted; make it inactive instead.
-                        </p>
-                        {deleteError && <p className="cc-error" role="alert">{deleteError}</p>}
-                        <div className="cc-actions">
-                            <button type="button" className="cc-btn" onClick={() => setDeleting(null)} disabled={deleteBusy}>
-                                Cancel
-                            </button>
-                            <button type="button" className="cc-btn cc-btn-primary" onClick={confirmDelete} disabled={deleteBusy}>
-                                {deleteBusy ? 'Deleting…' : 'Delete'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }

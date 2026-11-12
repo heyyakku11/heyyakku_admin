@@ -1,18 +1,16 @@
-import type { AdminFunCard, Check } from '../types/check';
+import type { Check, FunCardGroupTheme, FunCardItem } from '../types/check';
 
 /** The card component renders checks; a just-for-fun card has no live week, so it is shown as a live check. */
-export function funCardToCheck(card: AdminFunCard): Check {
+export function funCardToCheck(card: FunCardItem, theme: FunCardGroupTheme): Check {
     return {
         id: card.id,
         weekStart: '',
-        title: card.title,
+        title: theme.heading,
         question: card.question,
-        backgroundColor: card.backgroundColor,
+        backgroundColor: theme.backgroundColor,
+        labelColor: theme.labelColor,
         isActive: card.isActive,
         status: 'live',
         options: card.options,
-        checkType: card.theme?.checkType,
-        checkTypeId: card.theme?.checkTypeId,
-        theme: card.theme,
     };
 }
