@@ -1,8 +1,11 @@
 import './header.css';
+import { useAdminProfile } from '../utils/session';
 
 function Header() {
-    const email = localStorage.getItem("email") ?? "";
-    const role = localStorage.getItem("role") ?? "";
+    // From the server-reported session held in memory; nothing here is read from browser storage.
+    const profile = useAdminProfile();
+    const email = profile?.email ?? "";
+    const role = profile?.role ?? "";
 
     const avatarCharacter = email
     ? email.charAt(0).toUpperCase()

@@ -9,20 +9,43 @@ import ResetPassword from './pages/auth/ResetPassword';
 import VerifyEmail from './pages/auth/VerifyEmail';
 import NotFound from './pages/auth/NotFound';
 import SessionEndedDialog from './components/SessionEndedDialog';
-import { startAutoRefresh, stopAutoRefresh } from './services/api';
-import { SESSION_ENDED_EVENT } from './utils/authEvents';
-import { clearSession, isSessionValid } from './utils/session';
+import { adminSession } from './services/authService';
+import axios from 'axios';
+import { SESSION_ENDED_EVENT, endSession } from './utils/authEvents';
+import { clearSession, setSession } from './utils/session';
 
 function App() {
 
-    const [isAdminLogin, setLogin] = useState(() => {
-        if (isSessionValid()) return true;
-        clearSession();
-        return false;
-    });
+    const [isAdminLogin, setLogin] = useState(false);
 
-    // The token refresh gave up (the server rejected the refresh token). The admin is told why before
-    // going back to the login screen.
+    // Nothing in the browser proves the admin is signed in: ask the server (it reads the HttpOnly cookie).
+    const [checking, setChecking] = useState(true);
+    useEffect(() => {
+        let cancelled = false;
+        adminSession()
+            .then((response) => {
+                if (cancelled) return;
+                if (response.success && response.data) {
+                    setSession({ email: response.data.email, role: response.data.role }, response.data.csrfToken);
+                    setLogin(true);
+                } else {
+                    clearSession();
+                }
+            })
+            .catch(() => {
+                // 401 (no session) or the server is unreachable: show the sign-in screen either way.
+                if (!cancelled) clearSession();
+            })
+            .finally(() => {
+                if (!cancelled) setChecking(false);
+            });
+        return () => {
+            cancelled = true;
+        };
+    }, []);
+
+    // The server rejected the session (expired, revoked, or closed from another device). The admin is told why
+    // before going back to the login screen.
     const [sessionEnded, setSessionEnded] = useState(false);
     useEffect(() => {
         const onSessionEnded = () => setSessionEnded(true);
@@ -30,12 +53,21 @@ function App() {
         return () => window.removeEventListener(SESSION_ENDED_EVENT, onSessionEnded);
     }, []);
 
-    // While signed in, keep renewing the access token in the background.
+    // Timers sleep in background tabs, so re-check with the server when the admin comes back to the tab.
     useEffect(() => {
         if (!isAdminLogin) return;
-        startAutoRefresh();
-        return stopAutoRefresh;
+        const onVisible = () => {
+            if (document.visibilityState !== 'visible') return;
+            adminSession().catch((error) => {
+                // The server no longer accepts the session. Other failures (offline) are ignored.
+                if (axios.isAxiosError(error) && error.response?.status === 401) endSession();
+            });
+        };
+        document.addEventListener('visibilitychange', onVisible);
+        return () => document.removeEventListener('visibilitychange', onVisible);
     }, [isAdminLogin]);
+
+    if (checking) return null;
 
     return (
         <>

@@ -4,7 +4,7 @@ import { type ApiResponse } from "../types/apiResponse";
 import {
     type LoginResponse,
     type LoginRequest,
-    type RefreshRequest,
+    type SessionResponse,
     type RegisterRequest,
     type RegistrationStepResponse,
     type VerifyEmailRequest,
@@ -13,20 +13,24 @@ import {
     type ChangePasswordRequest
 } from "../types/auth";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 
 export async function adminLogin(
     data: LoginRequest
 ):Promise<ApiResponse<LoginResponse>>{
-   const response = await axios.post<ApiResponse<LoginResponse>>(`${API_BASE_URL}/api/v1/admin/auth/login`,data);
+   // Through `api` so the browser accepts the session cookie the response sets.
+   const response = await api.post<ApiResponse<LoginResponse>>("/api/v1/admin/auth/login",data);
    return response.data;
 }
 
-export async function adminLogout(
-    data: RefreshRequest
-):Promise<ApiResponse<null>>{
-   const response = await axios.post<ApiResponse<null>>(`${API_BASE_URL}/api/v1/admin/auth/logout`,data);
+/** Who the server says is signed in (and this session's CSRF token). 401 when there is no valid session. */
+export async function adminSession():Promise<ApiResponse<SessionResponse>>{
+   const response = await api.get<ApiResponse<SessionResponse>>("/api/v1/admin/auth/session");
+   return response.data;
+}
 
+export async function adminLogout():Promise<ApiResponse<null>>{
+   const response = await api.post<ApiResponse<null>>("/api/v1/admin/auth/logout");
    return response.data;
 }
 

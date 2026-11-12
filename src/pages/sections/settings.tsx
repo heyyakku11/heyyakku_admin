@@ -40,7 +40,7 @@ function Settings({ setLogin }: SettingsProps){
     const [error, setError] = useState<string | null>(null);
 
     function finishSignOut() {
-        // Always clear client authentication state.
+        // Always drop the in-memory session state.
         clearSession();
         setLogin(false);
     }
@@ -51,17 +51,18 @@ function Settings({ setLogin }: SettingsProps){
         setBusy('logout');
         setError(null);
         try {
-            const refreshToken = localStorage.getItem("refreshToken");
-            if (refreshToken) {
-                try {
-                    const response = await adminLogout({ refreshToken });
-                    if (!response.success) console.warn("Server logout failed:", response.message);
-                } catch (ex) {
-                    console.warn("Server logout request failed:", ex);
-                }
+            // The server revokes this session and clears the cookie; the browser cannot do that itself.
+            const response = await adminLogout();
+            if (!response.success) {
+                setError(response.message || 'Could not sign out.');
+                return;
             }
-        } finally {
             finishSignOut();
+        } catch (ex) {
+            // Stay signed in: the session is still live on the server, so pretending to log out would be a lie.
+            setError(getErrorMessage(ex));
+        } finally {
+            setBusy(null);
         }
     }
 
