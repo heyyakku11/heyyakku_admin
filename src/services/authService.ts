@@ -13,8 +13,6 @@ import {
     type ChangePasswordRequest
 } from "../types/auth";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
-
 export async function adminLogin(
     data: LoginRequest
 ):Promise<ApiResponse<LoginResponse>>{
@@ -41,7 +39,7 @@ export async function adminLogoutAll(
    return response.data;
 }
 
-const AUTH_BASE = `${API_BASE_URL}/api/v1/admin/auth`;
+const AUTH_BASE = `/api/v1/admin/auth`;
 
 export async function adminRegister(
     data: RegisterRequest

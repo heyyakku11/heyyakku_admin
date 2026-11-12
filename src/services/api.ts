@@ -6,11 +6,10 @@ import { getCsrfToken, setCsrfToken } from "../utils/csrf";
  * Admin authentication is an HttpOnly session cookie set by the backend. JavaScript cannot read it and nothing
  * here stores a token. The browser attaches the cookie (withCredentials); this file only adds the CSRF header.
  *
- * In production VITE_API_BASE_URL is empty: the app calls /api on its own origin and Vercel forwards it to the
- * backend (see vercel.json), which keeps the cookie first-party.
+ * The app always calls /api on its own origin: Vercel forwards it to the backend in production (vercel.json) and
+ * the Vite dev server does the same locally (vite.config.ts). That keeps the cookie first-party and means the
+ * app itself holds no backend address.
  */
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
-
 const CSRF_HEADER = "X-CSRF-Token";
 const SESSION_PATH = "/api/v1/admin/auth/session";
 const LOGIN_PATH = "/api/v1/admin/auth/login";
@@ -18,7 +17,6 @@ const LOGIN_PATH = "/api/v1/admin/auth/login";
 const SAFE_METHODS = new Set(["get", "head", "options"]);
 
 const api = axios.create({
-    baseURL: API_BASE_URL,
     withCredentials: true,
 });
 
