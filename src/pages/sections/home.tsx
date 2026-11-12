@@ -5,7 +5,7 @@ import CardCarousel from '../../components/CardCarousel';
 import EmptyState from '../../components/EmptyState';
 import CreateCheck from './CreateCheck';
 import CreateFunCard from './CreateFunCard';
-import CreateFunCardType from './CreateFunCardType';
+import CreateCardType from './CreateCardType';
 import FunCardsSection from './FunCardsSection';
 import type { ApiResponse } from '../../types/apiResponse';
 import type { Check } from '../../types/check';
@@ -27,6 +27,7 @@ function Home() {
     // The just-for-fun create form. funReload refreshes its container after a save.
     const [funCreating, setFunCreating] = useState(false);
     const [funTypeCreating, setFunTypeCreating] = useState(false);
+    const [checkTypeCreating, setCheckTypeCreating] = useState(false);
     const [funReload, setFunReload] = useState(0);
     const weekIndex = weeks.findIndex((w) => w.value === week);
     const isCurrentWeek = weeks[weekIndex]?.isCurrent ?? false;
@@ -92,9 +93,20 @@ function Home() {
         );
     }
 
+    if (checkTypeCreating) {
+        return (
+            <CreateCardType
+                kind="check"
+                onBack={() => setCheckTypeCreating(false)}
+                onSaved={() => setCheckTypeCreating(false)}
+            />
+        );
+    }
+
     if (funTypeCreating) {
         return (
-            <CreateFunCardType
+            <CreateCardType
+                kind="fun"
                 onBack={() => setFunTypeCreating(false)}
                 onSaved={() => {
                     setFunTypeCreating(false);
@@ -151,6 +163,9 @@ function Home() {
                         </svg>
                     </button>
                 </div>
+                <button type="button" className="home-add" onClick={() => setCheckTypeCreating(true)}>
+                    + Add type
+                </button>
                 <button type="button" className="home-add" onClick={() => setCreating(true)}>
                     + Add check
                 </button>

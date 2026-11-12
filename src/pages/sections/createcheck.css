@@ -546,3 +546,28 @@
     overflow-wrap: anywhere;
 }
 
+
+/* Color pair dropdown: a swatch of the chosen pair beside the select. */
+.cc-pair {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cc-pair-swatch {
+    flex: none;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--cc-border-strong);
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 16px;
+}
+
+.cc-pair select {
+    flex: 1;
+    min-width: 0;
+}

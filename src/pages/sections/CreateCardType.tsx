@@ -5,37 +5,62 @@ import BackButton from '../../components/BackButton';
 import CheckCard from '../../components/CheckCard';
 import type { Check } from '../../types/check';
 import { getErrorMessage } from '../../utils/apiError';
+import { COLOR_PAIRS } from '../../utils/colorPairs';
 
-const HEX = /^#[0-9a-f]{6}$/i;
 const NAME_MAX = 100;
 const TAG_MAX = 100;
 
-interface CreateFunCardTypeProps {
+/** The two kinds of card type an admin can define; each has its own endpoint and wording. */
+const KINDS = {
+    check: {
+        endpoint: '/api/v1/yakku/check-themes',
+        noun: 'check type',
+        title: 'Create check type',
+        eyebrow: "THIS WEEK'S DROP",
+        namePlaceholder: 'e.g. Mirror Check',
+        usedFor: 'creating checks',
+        intro: 'A check type sets the name, colors and tag that every check under it shares.',
+    },
+    fun: {
+        endpoint: '/api/v1/yakku/fun-cards/themes',
+        noun: 'card type',
+        title: 'Create card type',
+        eyebrow: 'JUST FOR FUN',
+        namePlaceholder: 'e.g. Emotional',
+        usedFor: 'creating fun cards',
+        intro: 'A card type sets the name, colors and tag that every card under it shares.',
+    },
+} as const;
+
+interface CreateCardTypeProps {
+    kind: keyof typeof KINDS;
     onBack: () => void;
     onSaved: () => void;
 }
 
 /**
- * Define a new fun card type (a theme): its name, the card background color, the heading color and an optional tag.
- * Cards are then created under it with "Add card". Uses POST /api/v1/yakku/fun-cards/themes.
+ * Define a new check type or fun card type (a theme): its name, a color pair chosen from the fixed list, and an
+ * optional tag. The admin never types a color code.
  */
-function CreateFunCardType({ onBack, onSaved }: CreateFunCardTypeProps) {
+function CreateCardType({ kind, onBack, onSaved }: CreateCardTypeProps) {
+    const copy = KINDS[kind];
     const [name, setName] = useState('');
-    const [backgroundColor, setBackgroundColor] = useState('#FFEFC2');
-    const [labelColor, setLabelColor] = useState('#6B4B00');
+    const [pairId, setPairId] = useState(COLOR_PAIRS[0].id);
     const [tag, setTag] = useState('');
     const [submitting, setSubmitting] = useState(false);
     const [confirming, setConfirming] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // A sample card so the colors can be judged before saving.
+    const pair = COLOR_PAIRS.find((p) => p.id === pairId) ?? COLOR_PAIRS[0];
+
+    // A sample card so the pair can be judged before saving.
     const preview: Check = {
         id: 'preview',
         weekStart: '',
-        title: name.trim() || 'Card type name',
+        title: name.trim() || 'Type name',
         question: 'Your question will appear here',
-        backgroundColor: HEX.test(backgroundColor) ? backgroundColor : '',
-        labelColor: HEX.test(labelColor) ? labelColor : '',
+        backgroundColor: pair.backgroundColor,
+        labelColor: pair.labelColor,
         isActive: true,
         status: 'live',
         options: [
@@ -47,8 +72,6 @@ function CreateFunCardType({ onBack, onSaved }: CreateFunCardTypeProps) {
     function problem(): string | null {
         if (!name.trim()) return 'Type name is required.';
         if (name.trim().length > NAME_MAX) return `Type name must be at most ${NAME_MAX} characters.`;
-        if (!HEX.test(backgroundColor)) return 'Background color must be a hex color like #FFEFC2.';
-        if (!HEX.test(labelColor)) return 'Label color must be a hex color like #6B4B00.';
         if (tag.trim().length > TAG_MAX) return `Tag must be at most ${TAG_MAX} characters.`;
         return null;
     }
@@ -72,10 +95,10 @@ function CreateFunCardType({ onBack, onSaved }: CreateFunCardTypeProps) {
         setSubmitting(true);
         setError(null);
         try {
-            await api.post('/api/v1/yakku/fun-cards/themes', {
+            await api.post(copy.endpoint, {
                 name: name.trim(),
-                backgroundColor,
-                labelColor,
+                backgroundColor: pair.backgroundColor,
+                labelColor: pair.labelColor,
                 tag: tag.trim() || null,
             });
             onSaved();
@@ -92,8 +115,8 @@ function CreateFunCardType({ onBack, onSaved }: CreateFunCardTypeProps) {
             <header className="cc-header">
                 <BackButton onClick={onBack} disabled={submitting} />
                 <div>
-                    <h2>Create card type</h2>
-                    <p>A card type sets the name, colors and tag that every card under it shares.</p>
+                    <h2>{copy.title}</h2>
+                    <p>{copy.intro}</p>
                 </div>
             </header>
 
@@ -105,53 +128,35 @@ function CreateFunCardType({ onBack, onSaved }: CreateFunCardTypeProps) {
                             <input
                                 value={name}
                                 maxLength={NAME_MAX}
-                                placeholder="e.g. Emotional"
+                                placeholder={copy.namePlaceholder}
                                 onChange={(e) => setName(e.target.value)}
                                 disabled={submitting}
                             />
                             <span className="cc-count">{name.length}/{NAME_MAX}</span>
                         </label>
 
-                        <div className="cc-grid">
-                            <div className="cc-field">
-                                <label className="cc-label" htmlFor="cc-type-bg">Background color</label>
-                                <div className="cc-color">
-                                    <input
-                                        id="cc-type-bg"
-                                        type="color"
-                                        value={HEX.test(backgroundColor) ? backgroundColor : '#ffffff'}
-                                        onChange={(e) => setBackgroundColor(e.target.value.toUpperCase())}
-                                        disabled={submitting}
-                                    />
-                                    <input
-                                        aria-label="Background color hex"
-                                        value={backgroundColor}
-                                        maxLength={7}
-                                        onChange={(e) => setBackgroundColor(e.target.value.trim())}
-                                        disabled={submitting}
-                                    />
-                                </div>
+                        <div className="cc-field">
+                            <label className="cc-label" htmlFor="cc-type-pair">Color pair</label>
+                            <div className="cc-pair">
+                                <span
+                                    className="cc-pair-swatch"
+                                    aria-hidden="true"
+                                    style={{ background: pair.backgroundColor, color: pair.labelColor }}
+                                >
+                                    Aa
+                                </span>
+                                <select
+                                    id="cc-type-pair"
+                                    value={pairId}
+                                    onChange={(e) => setPairId(e.target.value)}
+                                    disabled={submitting}
+                                >
+                                    {COLOR_PAIRS.map((p) => (
+                                        <option key={p.id} value={p.id}>{p.label}</option>
+                                    ))}
+                                </select>
                             </div>
-
-                            <div className="cc-field">
-                                <label className="cc-label" htmlFor="cc-type-label">Label color</label>
-                                <div className="cc-color">
-                                    <input
-                                        id="cc-type-label"
-                                        type="color"
-                                        value={HEX.test(labelColor) ? labelColor : '#000000'}
-                                        onChange={(e) => setLabelColor(e.target.value.toUpperCase())}
-                                        disabled={submitting}
-                                    />
-                                    <input
-                                        aria-label="Label color hex"
-                                        value={labelColor}
-                                        maxLength={7}
-                                        onChange={(e) => setLabelColor(e.target.value.trim())}
-                                        disabled={submitting}
-                                    />
-                                </div>
-                            </div>
+                            <span className="cc-help">The background and heading colors of every card of this type.</span>
                         </div>
 
                         <label className="cc-field">
@@ -159,7 +164,7 @@ function CreateFunCardType({ onBack, onSaved }: CreateFunCardTypeProps) {
                             <input
                                 value={tag}
                                 maxLength={TAG_MAX}
-                                placeholder="e.g. movies, jail, silly ones"
+                                placeholder="e.g. how people see you"
                                 onChange={(e) => setTag(e.target.value)}
                                 disabled={submitting}
                             />
@@ -170,14 +175,14 @@ function CreateFunCardType({ onBack, onSaved }: CreateFunCardTypeProps) {
                     {error && <p className="cc-error" role="alert">{error}</p>}
 
                     <button type="submit" className="cc-btn cc-btn-primary cc-submit" disabled={submitting}>
-                        Create card type
+                        {copy.title}
                     </button>
                 </form>
 
                 <aside className="cc-preview" aria-label="Preview">
                     <div className="cc-preview-inner">
                         <p>Preview</p>
-                        <CheckCard check={preview} eyebrow="JUST FOR FUN" />
+                        <CheckCard check={preview} eyebrow={copy.eyebrow} />
                     </div>
                 </aside>
             </div>
@@ -185,9 +190,9 @@ function CreateFunCardType({ onBack, onSaved }: CreateFunCardTypeProps) {
             {confirming && (
                 <div className="confirm-backdrop" role="presentation">
                     <div className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="confirm-type-title">
-                        <h3 id="confirm-type-title">Confirm this card type</h3>
+                        <h3 id="confirm-type-title">Confirm this {copy.noun}</h3>
                         <p className="confirm-week">
-                            &quot;{name.trim()}&quot; will be available when creating fun cards. A card type can&apos;t be
+                            &quot;{name.trim()}&quot; will be available when {copy.usedFor}. A {copy.noun} can&apos;t be
                             changed after you create it.
                         </p>
                         <div className="cc-actions">
@@ -205,4 +210,4 @@ function CreateFunCardType({ onBack, onSaved }: CreateFunCardTypeProps) {
     );
 }
 
-export default CreateFunCardType;
+export default CreateCardType;
