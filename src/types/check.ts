@@ -47,5 +47,7 @@ export interface FunCardItem {
 /** GET /api/v1/yakku/fun-cards: every fun card type with its cards. */
 export interface FunCardGroup {
     theme: FunCardGroupTheme,
+    /** All cards of this type; `cards` may hold only a preview (the first 4). */
+    totalCount: number,
     cards: FunCardItem[],
 }

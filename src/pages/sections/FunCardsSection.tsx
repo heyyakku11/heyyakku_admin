@@ -1,22 +1,26 @@
 import { useCallback, useEffect, useState } from 'react';
 import api from '../../services/api';
-import CardCarousel from '../../components/CardCarousel';
 import EmptyState from '../../components/EmptyState';
+import { FunCardTile, FunTypeTag } from '../../components/FunCardTile';
 import type { ApiResponse } from '../../types/apiResponse';
-import type { FunCardGroup } from '../../types/check';
+import type { FunCardGroup, FunCardGroupTheme } from '../../types/check';
 import { getErrorMessage } from '../../utils/apiError';
-import { funCardToCheck } from '../../utils/funCard';
 
 interface FunCardsSectionProps {
     onAdd: () => void;
     /** Opens the form that defines a new card type. */
     onAddType: () => void;
+    /** Opens the full list of one card type. */
+    onSeeAll: (theme: FunCardGroupTheme) => void;
     /** Change it to make the section reload (for example after saving a card). */
     reloadKey: number;
 }
 
-/** The "Just for fun" container: every fun card type with its cards, in the same carousel as the weekly checks. */
-function FunCardsSection({ onAdd, onAddType, reloadKey }: FunCardsSectionProps) {
+/**
+ * The "Just for fun" container: each card type starts its own line with its name, followed by a row of its cards
+ * that slides sideways. A row holds a preview (the API caps it at 4); "See all" opens the whole type.
+ */
+function FunCardsSection({ onAdd, onAddType, onSeeAll, reloadKey }: FunCardsSectionProps) {
     const [groups, setGroups] = useState<FunCardGroup[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -47,7 +51,7 @@ function FunCardsSection({ onAdd, onAddType, reloadKey }: FunCardsSectionProps) 
         setLocalReload((k) => k + 1);
     }, []);
 
-    const total = groups.reduce((sum, group) => sum + group.cards.length, 0);
+    const total = groups.reduce((sum, group) => sum + group.totalCount, 0);
 
     return (
         <section className="home-box" aria-label="Just for fun cards">
@@ -88,13 +92,23 @@ function FunCardsSection({ onAdd, onAddType, reloadKey }: FunCardsSectionProps) 
             )}
 
             {!loading && !error && groups.filter((group) => group.cards.length > 0).map((group) => (
-                <div key={group.theme.funCardTypeId}>
-                    <h3 className="home-subheading">{group.theme.heading}</h3>
-                    <CardCarousel
-                        cards={group.cards.map((card) => funCardToCheck(card, group.theme))}
-                        noun="card"
-                        eyebrow="JUST FOR FUN"
-                    />
+                <div className="fun-type" key={group.theme.funCardTypeId}>
+                    <FunTypeTag>{group.theme.heading}</FunTypeTag>
+                    <div className="fun-row">
+                        {group.cards.map((card) => (
+                            <FunCardTile key={card.id} card={card} theme={group.theme} />
+                        ))}
+                        {group.totalCount > group.cards.length && (
+                            <button type="button" className="fun-see-all" onClick={() => onSeeAll(group.theme)}>
+                                <span className="fun-see-all-icon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </span>
+                                See all ({group.totalCount})
+                            </button>
+                        )}
+                    </div>
                 </div>
             ))}
         </section>

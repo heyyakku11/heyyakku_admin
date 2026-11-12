@@ -182,7 +182,7 @@ function CreateCardType({ kind, onBack, onSaved }: CreateCardTypeProps) {
                 <aside className="cc-preview" aria-label="Preview">
                     <div className="cc-preview-inner">
                         <p>Preview</p>
-                        <CheckCard check={preview} eyebrow={copy.eyebrow} />
+                        <CheckCard check={preview} eyebrow={copy.eyebrow} showAsk={kind !== 'fun'} />
                     </div>
                 </aside>
             </div>

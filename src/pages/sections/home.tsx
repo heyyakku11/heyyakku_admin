@@ -6,9 +6,10 @@ import EmptyState from '../../components/EmptyState';
 import CreateCheck from './CreateCheck';
 import CreateFunCard from './CreateFunCard';
 import CreateCardType from './CreateCardType';
+import FunCardsByType from './FunCardsByType';
 import FunCardsSection from './FunCardsSection';
 import type { ApiResponse } from '../../types/apiResponse';
-import type { Check } from '../../types/check';
+import type { Check, FunCardGroupTheme } from '../../types/check';
 import { getErrorMessage } from '../../utils/apiError';
 import { mondayOptions } from '../../utils/weeks';
 
@@ -28,6 +29,8 @@ function Home() {
     const [funCreating, setFunCreating] = useState(false);
     const [funTypeCreating, setFunTypeCreating] = useState(false);
     const [checkTypeCreating, setCheckTypeCreating] = useState(false);
+    // The fun card type whose whole list ("See all") is open.
+    const [seeAllType, setSeeAllType] = useState<FunCardGroupTheme | null>(null);
     const [funReload, setFunReload] = useState(0);
     const weekIndex = weeks.findIndex((w) => w.value === week);
     const isCurrentWeek = weeks[weekIndex]?.isCurrent ?? false;
@@ -91,6 +94,10 @@ function Home() {
                 }}
             />
         );
+    }
+
+    if (seeAllType) {
+        return <FunCardsByType type={seeAllType} onBack={() => setSeeAllType(null)} />;
     }
 
     if (checkTypeCreating) {
@@ -195,6 +202,7 @@ function Home() {
                 reloadKey={funReload}
                 onAdd={() => setFunCreating(true)}
                 onAddType={() => setFunTypeCreating(true)}
+                onSeeAll={setSeeAllType}
             />
 
         </div>

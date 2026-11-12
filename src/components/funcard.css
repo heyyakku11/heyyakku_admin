@@ -1,0 +1,130 @@
+/* Fun card sections: a tilted type tag, then a row of cards that slides sideways. */
+
+.fun-type {
+    margin-top: 28px;
+}
+
+.fun-type:first-of-type {
+    margin-top: 12px;
+}
+
+.fun-tag {
+    display: inline-block;
+    transform: rotate(-3deg);
+    margin: 0 0 16px 4px;
+    padding: 6px 16px;
+    border-radius: 12px;
+    background: #d02e62;
+    box-shadow: 3px 3px 0 #21191d;
+}
+
+.fun-tag-text {
+    display: block;
+    color: #fff;
+    font-family: 'Pacifico', cursive;
+    font-size: 22px;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 1.3;
+}
+
+/* The sliding row: swipe, drag the scrollbar or use the trackpad. Cards snap into place. */
+.fun-row {
+    display: flex;
+    gap: 12px;
+    padding: 4px 4px 12px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scroll-padding-left: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+.fun-row > * {
+    flex: none;
+    scroll-snap-align: start;
+}
+
+.fun-tile {
+    position: relative;
+    box-sizing: border-box;
+    width: 240px;
+    min-height: 150px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1.5px solid #21191d;
+    border-radius: 20px;
+}
+
+.fun-tile-question {
+    margin: 0;
+    color: #21191d;
+    font-size: 16px;
+    font-weight: 800;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.fun-tile.inactive {
+    opacity: 0.6;
+}
+
+.fun-tile-badge {
+    align-self: flex-start;
+    margin-top: 12px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: #21191d;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* "See all": the dashed tile at the end of a row. */
+.fun-see-all {
+    box-sizing: border-box;
+    width: 110px;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1.5px dashed #21191d;
+    border-radius: 20px;
+    background: transparent;
+    color: #21191d;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.fun-see-all-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #d02e62;
+    color: #fff;
+}
+
+.fun-see-all:hover .fun-see-all-icon {
+    background: #b6244f;
+}
+
+/* The full list of one type: a grid instead of a row. */
+.fun-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    padding: 4px;
+}
+
+.fun-grid .fun-tile {
+    width: auto;
+}

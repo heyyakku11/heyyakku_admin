@@ -233,7 +233,7 @@ function CreateFunCard({ onBack, onSaved }: CreateFunCardProps) {
                 <aside className="cc-preview" aria-label="Preview">
                     <div className="cc-preview-inner">
                         <p>Preview</p>
-                        <CheckCard check={preview} eyebrow="JUST FOR FUN" />
+                        <CheckCard check={preview} eyebrow="JUST FOR FUN" showAsk={false} />
                     </div>
                 </aside>
             </div>

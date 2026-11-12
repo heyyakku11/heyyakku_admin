@@ -15,6 +15,8 @@ interface CheckCardProps {
     footer?: React.ReactNode;
     /** The dark pill above the heading. Defaults to the weekly check one. */
     eyebrow?: string;
+    /** The Ask now button. Fun cards are not asked from the dashboard, so their previews hide it. */
+    showAsk?: boolean;
 }
 
 function ShareIcon() {
@@ -37,7 +39,7 @@ function LockIcon() {
 }
 
 
-function CheckCard({ check, showStatus = false, footer, eyebrow = 'THIS WEEK\'S DROP' }: CheckCardProps) {
+function CheckCard({ check, showStatus = false, footer, eyebrow = 'THIS WEEK\'S DROP', showAsk = true }: CheckCardProps) {
     const theme = resolveTheme(check);
     const question = check.question ?? '';
     const showQuestion = question.trim() !== '' && question !== theme.heading;
@@ -91,10 +93,12 @@ function CheckCard({ check, showStatus = false, footer, eyebrow = 'THIS WEEK\'S 
                     </div>
                 </div>
 
-                <div className="check-card-ask">
-                    <ShareIcon />
-                    Ask now
-                </div>
+                {showAsk && (
+                    <div className="check-card-ask">
+                        <ShareIcon />
+                        Ask now
+                    </div>
+                )}
                 <p className="check-card-note">
                     <LockIcon />
                     Anonymous answers, real opinions
