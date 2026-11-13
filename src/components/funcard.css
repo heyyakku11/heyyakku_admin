@@ -72,9 +72,34 @@
     opacity: 0.6;
 }
 
+.fun-tile-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 12px;
+    min-height: 26px;
+}
+
+.fun-tile-delete {
+    margin-left: auto;
+    padding: 4px 12px;
+    border: 1.5px solid #21191d;
+    border-radius: 999px;
+    background: transparent;
+    color: #b42318;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.fun-tile-delete:hover {
+    background: #21191d;
+    color: #fff;
+}
+
 .fun-tile-badge {
     align-self: flex-start;
-    margin-top: 12px;
     padding: 3px 10px;
     border-radius: 999px;
     background: #21191d;

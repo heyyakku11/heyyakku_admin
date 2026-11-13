@@ -2,10 +2,11 @@ import './createcheck.css';
 import { useEffect, useState } from 'react';
 import api from '../../services/api';
 import BackButton from '../../components/BackButton';
+import ConfirmDelete from '../../components/ConfirmDelete';
 import EmptyState from '../../components/EmptyState';
 import { FunCardTile, FunTypeTag } from '../../components/FunCardTile';
 import type { ApiResponse } from '../../types/apiResponse';
-import type { FunCardGroup, FunCardGroupTheme } from '../../types/check';
+import type { FunCardGroup, FunCardGroupTheme, FunCardItem } from '../../types/check';
 import { getErrorMessage } from '../../utils/apiError';
 
 interface FunCardsByTypeProps {
@@ -19,6 +20,7 @@ function FunCardsByType({ type, onBack }: FunCardsByTypeProps) {
     const [group, setGroup] = useState<FunCardGroup | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [reload, setReload] = useState(0);
+    const [deleting, setDeleting] = useState<FunCardItem | null>(null);
 
     useEffect(() => {
         let cancelled = false;
@@ -70,11 +72,24 @@ function FunCardsByType({ type, onBack }: FunCardsByTypeProps) {
                 {group !== null && group.cards.length > 0 && (
                     <div className="fun-grid">
                         {group.cards.map((card) => (
-                            <FunCardTile key={card.id} card={card} theme={theme} />
+                            <FunCardTile key={card.id} card={card} theme={theme} onDelete={setDeleting} />
                         ))}
                     </div>
                 )}
             </div>
+
+            {deleting && (
+                <ConfirmDelete
+                    title="Delete this card?"
+                    message={`"${deleting.question}" will be removed permanently, even if users have already made it. Their copies of it and the answers they collected are deleted too.`}
+                    onClose={() => setDeleting(null)}
+                    onConfirm={async () => {
+                        await api.delete(`/api/v1/yakku/fun-cards/${deleting.id}`);
+                        setDeleting(null);
+                        setReload((k) => k + 1);
+                    }}
+                />
+            )}
         </div>
     );
 }

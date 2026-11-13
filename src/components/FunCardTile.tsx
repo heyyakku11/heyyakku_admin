@@ -12,16 +12,32 @@ export function FunTypeTag({ children }: { children: React.ReactNode }) {
 
 /**
  * One fun card as the admin sees it: the question on the type's background. There is no Ask now button here;
- * that belongs to the app. An inactive card is marked so it is not mistaken for a live one.
+ * that belongs to the app. An inactive card is marked so it is not mistaken for a live one, and it can be deleted.
  */
-export function FunCardTile({ card, theme }: { card: FunCardItem; theme: FunCardGroupTheme }) {
+export function FunCardTile({
+    card,
+    theme,
+    onDelete,
+}: {
+    card: FunCardItem;
+    theme: FunCardGroupTheme;
+    /** Shows a Delete button on the card. */
+    onDelete?: (card: FunCardItem) => void;
+}) {
     return (
         <article
             className={`fun-tile${card.isActive ? '' : ' inactive'}`}
             style={{ background: theme.backgroundColor }}
         >
             <p className="fun-tile-question">{card.question}</p>
-            {!card.isActive && <span className="fun-tile-badge">Inactive</span>}
+            <div className="fun-tile-foot">
+                {!card.isActive && <span className="fun-tile-badge">Inactive</span>}
+                {onDelete && (
+                    <button type="button" className="fun-tile-delete" onClick={() => onDelete(card)}>
+                        Delete
+                    </button>
+                )}
+            </div>
         </article>
     );
 }

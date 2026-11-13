@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import api from '../../services/api';
+import ConfirmDelete from '../../components/ConfirmDelete';
 import EmptyState from '../../components/EmptyState';
 import { FunCardTile, FunTypeTag } from '../../components/FunCardTile';
 import type { ApiResponse } from '../../types/apiResponse';
-import type { FunCardGroup, FunCardGroupTheme } from '../../types/check';
+import type { FunCardGroup, FunCardGroupTheme, FunCardItem } from '../../types/check';
 import { getErrorMessage } from '../../utils/apiError';
 
 interface FunCardsSectionProps {
@@ -25,6 +26,7 @@ function FunCardsSection({ onAdd, onAddType, onSeeAll, reloadKey }: FunCardsSect
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [localReload, setLocalReload] = useState(0);
+    const [deleting, setDeleting] = useState<FunCardItem | null>(null);
 
     useEffect(() => {
         let cancelled = false;
@@ -96,7 +98,7 @@ function FunCardsSection({ onAdd, onAddType, onSeeAll, reloadKey }: FunCardsSect
                     <FunTypeTag>{group.theme.heading}</FunTypeTag>
                     <div className="fun-row">
                         {group.cards.map((card) => (
-                            <FunCardTile key={card.id} card={card} theme={group.theme} />
+                            <FunCardTile key={card.id} card={card} theme={group.theme} onDelete={setDeleting} />
                         ))}
                         {group.totalCount > group.cards.length && (
                             <button type="button" className="fun-see-all" onClick={() => onSeeAll(group.theme)}>
@@ -111,6 +113,19 @@ function FunCardsSection({ onAdd, onAddType, onSeeAll, reloadKey }: FunCardsSect
                     </div>
                 </div>
             ))}
+
+            {deleting && (
+                <ConfirmDelete
+                    title="Delete this card?"
+                    message={`"${deleting.question}" will be removed permanently, even if users have already made it. Their copies of it and the answers they collected are deleted too.`}
+                    onClose={() => setDeleting(null)}
+                    onConfirm={async () => {
+                        await api.delete(`/api/v1/yakku/fun-cards/${deleting.id}`);
+                        setDeleting(null);
+                        retry();
+                    }}
+                />
+            )}
         </section>
     );
 }

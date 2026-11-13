@@ -8,6 +8,7 @@ import CreateFunCard from './CreateFunCard';
 import CreateCardType from './CreateCardType';
 import FunCardsByType from './FunCardsByType';
 import FunCardsSection from './FunCardsSection';
+import ConfirmDelete from '../../components/ConfirmDelete';
 import type { ApiResponse } from '../../types/apiResponse';
 import type { Check, FunCardGroupTheme } from '../../types/check';
 import { getErrorMessage } from '../../utils/apiError';
@@ -23,6 +24,7 @@ function Home() {
     const [reloadKey, setReloadKey] = useState(0);
     // false = the list, true = the create check form.
     const [creating, setCreating] = useState(false);
+    const [deleting, setDeleting] = useState<Check | null>(null);
     const weeks = useMemo(() => mondayOptions(WEEKS_BACK, WEEKS_AHEAD), []);
     const [week, setWeek] = useState(() => weeks.find((w) => w.isCurrent)!.value);
     // The just-for-fun create form. funReload refreshes its container after a save.
@@ -194,6 +196,7 @@ function Home() {
                 <CardCarousel
                     key={week}
                     cards={checks}
+                    onDelete={setDeleting}
                 />
             )}
           </section>
@@ -205,6 +208,18 @@ function Home() {
                 onSeeAll={setSeeAllType}
             />
 
+            {deleting && (
+                <ConfirmDelete
+                    title="Delete this check?"
+                    message={`"${deleting.title}" will be removed permanently, even if users have already made it. Their copies of it and the answers they collected are deleted too.`}
+                    onClose={() => setDeleting(null)}
+                    onConfirm={async () => {
+                        await api.delete(`/api/v1/yakku/checks/${deleting.id}`);
+                        setDeleting(null);
+                        retry();
+                    }}
+                />
+            )}
         </div>
     );
 }
