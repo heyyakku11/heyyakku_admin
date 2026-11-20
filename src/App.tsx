@@ -67,18 +67,29 @@ function App() {
         return () => document.removeEventListener('visibilitychange', onVisible);
     }, [isAdminLogin]);
 
-    if (checking) return null;
-
     return (
         <>
         <BrowserRouter>
             <Routes>
-                {/* Standalone pages: reachable from email links regardless of login state */}
+                {/* Email-link pages must render immediately. Blocking on the session probe used to leave
+                    /verify-email (and forgot/reset) as a blank white screen on a full page load. */}
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/verify-email" element={<VerifyEmail />} />
 
-                {isAdminLogin
+                {checking
+                    ? (
+                        <Route
+                            path="*"
+                            element={
+                                <div
+                                    aria-busy="true"
+                                    style={{ minHeight: '100vh', background: '#fff9f6' }}
+                                />
+                            }
+                        />
+                    )
+                    : isAdminLogin
                     ? (
                         <>
                             <Route path="/" element={<Dashboard setLogin={setLogin} />} />
