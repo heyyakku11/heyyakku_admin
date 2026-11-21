@@ -81,10 +81,10 @@ function CreateCheck({ onBack, onSaved }: CreateCheckProps) {
         if (noThemes) return 'No check themes are available yet.';
         if (!typeId) return 'Pick a check theme.';
         if (!question.trim()) return 'Question is required.';
-        if (question.trim().length > 500) return 'Question must be at most 500 characters.';
+        if (question.trim().length > 200) return 'Question must be at most 200 characters.';
         if (!weekStart) return 'Pick the week this check goes live.';
         if (trimmedOptions.some((o) => !o)) return 'Fill in every option, or remove the empty one.';
-        if (trimmedOptions.some((o) => o.length > 200)) return 'Each option must be at most 200 characters.';
+        if (trimmedOptions.some((o) => o.length > 120)) return 'Each option must be at most 120 characters.';
         const lower = trimmedOptions.map((o) => o.toLowerCase());
         if (new Set(lower).size !== lower.length) return 'Options must be different from each other.';
         return null;
@@ -214,10 +214,10 @@ function CreateCheck({ onBack, onSaved }: CreateCheckProps) {
                                 rows={3}
                                 placeholder="e.g. Do people like me, or just like having me around?"
                                 value={question}
-                                maxLength={500}
+                                maxLength={200}
                                 onChange={(e) => setQuestion(e.target.value)}
                             />
-                            <span className="cc-count">{question.length}/500</span>
+                            <span className="cc-count">{question.length}/200</span>
                         </label>
 
                         <div className="cc-field">
@@ -229,7 +229,7 @@ function CreateCheck({ onBack, onSaved }: CreateCheckProps) {
                                         <input
                                             aria-label={`Option ${i + 1}`}
                                             value={option}
-                                            maxLength={200}
+                                            maxLength={120}
                                             placeholder={`Option ${i + 1}`}
                                             onChange={(e) => setOption(i, e.target.value)}
                                         />

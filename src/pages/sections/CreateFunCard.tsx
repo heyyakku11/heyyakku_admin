@@ -76,9 +76,9 @@ function CreateFunCard({ onBack, onSaved }: CreateFunCardProps) {
     function problem(): string | null {
         if (!typeId) return 'Pick a card type.';
         if (!question.trim()) return 'Question is required.';
-        if (question.trim().length > 500) return 'Question must be at most 500 characters.';
+        if (question.trim().length > 200) return 'Question must be at most 200 characters.';
         if (trimmedOptions.some((o) => !o)) return 'Fill in every option, or remove the empty one.';
-        if (trimmedOptions.some((o) => o.length > 200)) return 'Each option must be at most 200 characters.';
+        if (trimmedOptions.some((o) => o.length > 120)) return 'Each option must be at most 120 characters.';
         const lower = trimmedOptions.map((o) => o.toLowerCase());
         if (new Set(lower).size !== lower.length) return 'Options must be different from each other.';
         return null;
@@ -183,10 +183,10 @@ function CreateFunCard({ onBack, onSaved }: CreateFunCardProps) {
                                 rows={3}
                                 placeholder="e.g. If I were a Hindi movie, which one?"
                                 value={question}
-                                maxLength={500}
+                                maxLength={200}
                                 onChange={(e) => setQuestion(e.target.value)}
                             />
-                            <span className="cc-count">{question.length}/500</span>
+                            <span className="cc-count">{question.length}/200</span>
                         </label>
 
                         <div className="cc-field">
@@ -198,7 +198,7 @@ function CreateFunCard({ onBack, onSaved }: CreateFunCardProps) {
                                         <input
                                             aria-label={`Option ${i + 1}`}
                                             value={option}
-                                            maxLength={200}
+                                            maxLength={120}
                                             placeholder={`Option ${i + 1}`}
                                             onChange={(e) => setOption(i, e.target.value)}
                                         />
